@@ -1,6 +1,5 @@
-import pygame, sys, Settings, Graphics
+import sys, pygame, Settings
 import PlayScreen
-from pygame.locals import *
 
 pygame.init()
 
@@ -13,18 +12,14 @@ end_position = (int(Settings.map_width*3/4), int(Settings.map_height*3/4))
 pygame.display.set_caption('PyLap - Prototype')
 
 PS = PlayScreen
-BM = PS.BackgroundMap()
+WholeScreen = PS.WholeScreen()
+
+screen = pygame.display.set_mode(Settings.screen_dimensions)
+screen.fill((255, 255, 255))
 
 while True:
     
-   
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-    
-    
-    screen = pygame.display.set_mode((Settings.screen_width*Settings.sprite_width, Settings.screen_heigth*Settings.sprite_height))
+    PlayScreen.exit().check()
        
 #     screen.blit(background, (sprite_width, sprite_height), (0, 0, map_width * sprite_width, map_height * sprite_height ))
 #       
@@ -35,10 +30,10 @@ while True:
 #             if (w,h) == end_position:
 #                 screen.blit(end, (w*sprite_width, h*sprite_height))
 
-    screen.fill((255, 255, 255))
+
     
-    BM.move()
-    BM.draw(screen)
-    
+    WholeScreen.draw(screen)
+    WholeScreen.move()
+
     pygame.display.update()
     

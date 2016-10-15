@@ -8,4 +8,4 @@ floor = pygame.transform.scale(pygame.image.load(Settings.image_path + "floor.jp
 
 background = pygame.image.load(Settings.image_path + "map2.jpg")
 
-background_width, background_height = 1160, 689
+
