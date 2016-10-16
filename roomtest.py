@@ -9,8 +9,7 @@ class RoomTester :
 
     def __nbrs(self, point) :
         result = []
-        for t in [ (a,b) for a in [-1,0,1] for b in [-1,0,1] if (a,b) not in
-                  [(0,0)]] : #,(-1,1),(-1,-1),(1,-1),(1,1)]] :
+        for t in [ (a,b) for a in [-1,0,1] for b in [-1,0,1] if (a,b) not in [(0,0)]] : #,(-1,1),(-1,-1),(1,-1),(1,1)]] :
             sp = tuple(map(sum, zip(point,t)))
             if sp[0] >= 0 and sp[0] < self.width and sp[1] >= 0 and sp[1] < self.height:
                 result = result + [sp]

@@ -2,7 +2,7 @@
 image_path = "images/"
 
 sprite_width = 32
-sprite_height = 32
+sprite_height = sprite_width
 
 screen_scale = 10
 
