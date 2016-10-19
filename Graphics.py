@@ -1,5 +1,4 @@
 import pygame, Settings
-from reportlab.lib.rparsexml import filenames
 
 pygame.init()
 
