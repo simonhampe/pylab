@@ -19,11 +19,6 @@ def check_user_interactions(WS):
         if (event.type == QUIT) or ((event.type == pygame.KEYDOWN) and (event.key == pygame.K_ESCAPE)):
             pygame.quit()
             sys.exit()
-        #Screen resize event
-        if event.type == VIDEORESIZE:
-            screen = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-            screen_size = event.size
-            screen.fill((255, 255, 255))
         #Mouse zooming
         if event.type == pygame.MOUSEBUTTONDOWN:
             #scroll UP, zoom OUT
@@ -36,9 +31,9 @@ def check_user_interactions(WS):
             Graphics.Tilemap_scaled = pygame.transform.scale(Graphics.Tilemap_unscaled,
                                                      (int(Graphics.Tilemap_unscaled.get_width() * Settings.map_scaling_factor),
                                                       int(Graphics.Tilemap_unscaled.get_height() * Settings.map_scaling_factor)))
-            WS.Tilemap.x /= Settings.map_scaling_factor
-
-
+            WS.Tilemap.x = 0
+            WS.Tilemap.y = 0
+            
 #collection of all the action on the whole screen
 class WholeScreen:
 
@@ -107,7 +102,6 @@ class Tilemap():
 
         self.width_displayed_in_sprites = int(self.width_displayed / Settings.sprite_width)
         self.height_displayed_in_sprites = int(self.height_displayed / Settings.sprite_height)
-        self.size_displayed_in_sprites = self.width_displayed_in_sprites, self.height_displayed_in_sprites
                 
         self.width_in_sprites = Labyrinth.width
         self.height_in_sprites = Labyrinth.height
@@ -143,23 +137,22 @@ class Tilemap():
     
     def move(self):
         key = pygame.key.get_pressed()
-        dist = 5
+        dist = 5 * Settings.map_scaling_factor**(0.5)
 
         if key[pygame.K_DOWN]:
-            if self.height_in_sprites > self.height_displayed_in_sprites:
+            if self.height_in_sprites > self.height_displayed_in_sprites / Settings.map_scaling_factor:
                 self.y += dist
-                self.y = min(self.y, self.height - self.height_displayed)
+                self.y = min(self.y, (self.height * Settings.map_scaling_factor - self.height_displayed))
         if key[pygame.K_UP]:
             self.y -= dist
             self.y = max(self.y, 0)
         if key[pygame.K_RIGHT]:
-            if self.width_in_sprites > self.width_displayed_in_sprites:
+            if self.width_in_sprites > self.width_displayed_in_sprites / Settings.map_scaling_factor:
                 self.x += dist
-                self.x = min(self.x, self.width - self.width_displayed)
+                self.x = min(self.x, self.width * Settings.map_scaling_factor - self.width_displayed)
         if key[pygame.K_LEFT]:
             self.x -= dist
             self.x = max(self.x, 0)
-        print(self.x, self.y)
             
     def draw_unscaled(self, surface):
         #Laufe durch Breite und Höhe der Tilemap in Sprites +1. +1 weil die Tiles in der erste und letzten Reihe oder Spalte anteilig sein können.
@@ -219,11 +212,9 @@ class Tilemap():
                 surface.blit(image, (image_x, image_y), (image_inner_x, image_inner_y, image_inner_width, image_inner_height))
     
     def draw(self, surface):
-        
-        pass
                 
         surface.fill((255, 255, 255))
-        surface.blit(Graphics.Tilemap_scaled, (Settings.sprite_width, Settings.sprite_height), (int(self.x * Settings.map_scaling_factor), int(self.y * Settings.map_scaling_factor)) + self.size_displayed)
+        surface.blit(Graphics.Tilemap_scaled, (Settings.sprite_width, Settings.sprite_height), (self.x, self.y) + self.size_displayed)
     
 #class for health bar
 class Healthbar:

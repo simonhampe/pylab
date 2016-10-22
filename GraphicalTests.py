@@ -1,5 +1,5 @@
 import sys, pygame, Settings, Graphics
-import PlayScreen, Labyrinth, LabyrinthGenerator
+import PlayScreen, Labyrinth, LabyrinthGenerator, CaveLabGenerator
 from PlayScreen import WholeScreen
 from roomtest import RoomTester
 
@@ -8,7 +8,7 @@ from roomtest import RoomTester
 
 pygame.display.set_caption('PyLap - Prototype')
 
-Lab = RoomTester(60, 40).generate_labyrinth()
+Lab = CaveLabGenerator.CaveLabGenerator(511, 511).generate_labyrinth()
 
 WS = PlayScreen.WholeScreen(Lab)
 

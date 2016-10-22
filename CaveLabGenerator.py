@@ -92,5 +92,5 @@ class CaveLabGenerator :
         for c in corridors :
             lab_dict.update( self._build_corrdior( room_dict_list[c[0]], room_dict_list[c[1]]))
 
-        print("Rooms: ", len(roomlist))
+        #print("Rooms: ", len(roomlist))
         return Labyrinth(self.width,self.height,(0,0),(0,0), lab_dict)
