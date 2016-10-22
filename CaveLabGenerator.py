@@ -18,7 +18,7 @@ class CaveLabGenerator :
     def __init__(self, width, height) :
         self.width = width
         self.height = height
-        self.room_tries =10 
+        self.room_tries =10
         self.min_room_dims = (10,10)
         self.max_room_dims = (20,20)
         self.boundary_buffer = 5

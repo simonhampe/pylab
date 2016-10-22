@@ -1,5 +1,6 @@
 import sys, pygame, Settings, Graphics
-import PlayScreen, Labyrinth, LabyrinthGenerator
+import PlayScreen, Labyrinth, LabyrinthGenerator, CaveLabGenerator
+from PlayScreen import WholeScreen
 from roomtest import RoomTester
 from CaveLabGenerator import CaveLabGenerator
 
@@ -8,15 +9,13 @@ from CaveLabGenerator import CaveLabGenerator
 
 pygame.display.set_caption('PyLap - Prototype')
 
-Lab = CaveLabGenerator(100,100).generate_labyrinth()
-#RoomTester(100, 100).generate_labyrinth()
+Lab = CaveLabGenerator.CaveLabGenerator(511, 511).generate_labyrinth()
 
-PS = PlayScreen
-WholeScreen = PS.WholeScreen(Lab)
+WS = PlayScreen.WholeScreen(Lab)
 
 while True:
-    
-    PlayScreen.exit().check()
+
+    PlayScreen.check_user_interactions(WS)
        
 #     screen.blit(background, (sprite_width, sprite_height), (0, 0, map_width * sprite_width, map_height * sprite_height ))
 #       
@@ -29,7 +28,7 @@ while True:
 
 
     
-    WholeScreen.draw(Graphics.screen)
-    WholeScreen.move()
+    WS.draw(Graphics.screen)
+    WS.move()
 
     pygame.display.update()
