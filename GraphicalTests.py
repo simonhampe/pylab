@@ -1,5 +1,6 @@
 import sys, pygame, Settings, Graphics
 import PlayScreen, Labyrinth, LabyrinthGenerator
+from PlayScreen import WholeScreen
 from roomtest import RoomTester
 
 # start_position = (int(Settings.map_width/4), int(Settings.map_height/4))
@@ -7,14 +8,13 @@ from roomtest import RoomTester
 
 pygame.display.set_caption('PyLap - Prototype')
 
-Lab = RoomTester(100, 100).generate_labyrinth()
+Lab = RoomTester(60, 40).generate_labyrinth()
 
-PS = PlayScreen
-WholeScreen = PS.WholeScreen(Lab)
+WS = PlayScreen.WholeScreen(Lab)
 
 while True:
-    
-    PlayScreen.exit().check()
+
+    PlayScreen.check_user_interactions(WS)
        
 #     screen.blit(background, (sprite_width, sprite_height), (0, 0, map_width * sprite_width, map_height * sprite_height ))
 #       
@@ -27,7 +27,7 @@ while True:
 
 
     
-    WholeScreen.draw(Graphics.screen)
-    WholeScreen.move()
+    WS.draw(Graphics.screen)
+    WS.move()
 
     pygame.display.update()
