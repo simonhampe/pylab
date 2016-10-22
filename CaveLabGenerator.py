@@ -18,7 +18,7 @@ class CaveLabGenerator :
     def __init__(self, width, height) :
         self.width = width
         self.height = height
-        self.room_tries = 20
+        self.room_tries =10 
         self.min_room_dims = (10,10)
         self.max_room_dims = (20,20)
         self.boundary_buffer = 5
@@ -92,5 +92,4 @@ class CaveLabGenerator :
         for c in corridors :
             lab_dict.update( self._build_corrdior( room_dict_list[c[0]], room_dict_list[c[1]]))
 
-        print("Rooms: ", len(roomlist))
         return Labyrinth(self.width,self.height,(0,0),(0,0), lab_dict)

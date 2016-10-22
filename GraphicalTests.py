@@ -1,13 +1,15 @@
 import sys, pygame, Settings, Graphics
 import PlayScreen, Labyrinth, LabyrinthGenerator
 from roomtest import RoomTester
+from CaveLabGenerator import CaveLabGenerator
 
 # start_position = (int(Settings.map_width/4), int(Settings.map_height/4))
 # end_position = (int(Settings.map_width*3/4), int(Settings.map_height*3/4))
 
 pygame.display.set_caption('PyLap - Prototype')
 
-Lab = RoomTester(100, 100).generate_labyrinth()
+Lab = CaveLabGenerator(100,100).generate_labyrinth()
+#RoomTester(100, 100).generate_labyrinth()
 
 PS = PlayScreen
 WholeScreen = PS.WholeScreen(Lab)
