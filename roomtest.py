@@ -26,7 +26,7 @@ class RoomTester :
         bdy = 10
         initial_agent = ( random.choice(range(bdy,self.width-bdy)),
                          random.choice(range(bdy,self.height-bdy)),100)
-        degen = 4
+        degen = 6
         nbbonus = 4
         queue = [initial_agent]
         dict = { (initial_agent[0], initial_agent[1]) : 0}
@@ -34,7 +34,7 @@ class RoomTester :
             (ax,ay,ap), queue = queue[0], queue[1:]
             newprob = ap - degen
             deadnb = [p for p in self.__nbrs( (ax,ay)) if p not in dict.keys()]
-            if random.randint(1,100) <= self.__bdypen((ax,ay), bdy) * ap + nbbonus*(8-len(deadnb)) :
+            if random.randint(1,100) <= self.__bdypen((ax,ay), bdy) * (ap + nbbonus*(8-len(deadnb))) :
                 for nb in deadnb :
                     queue = queue + [ (nb[0],nb[1],newprob)]
                     dict[nb] = 0

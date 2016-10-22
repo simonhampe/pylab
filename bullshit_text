@@ -1,0 +1,16 @@
+Summary of pow-wow on 19.10.2016:
+
+- Room generator in roomtest.py kind of okay as is
+- Generate labyrinth in the following manner:
+    - Place random squares in map
+    - Fill squares with random room generated as above
+    - Create random graph between rooms
+    - For each edge built a random corridor:
+    - The corridor should be winding: Maybe get more goal-oriented as time progresses
+    - Generate Nirvana independently
+    - For merging: Every wall which lies on the same coordinate as Nirvana becomes Nirvana
+    - (in the end, everything becomes Nirvana. 'Cause we don't really care. Fuck you all)
+
+- Next todos:
+    - Sebb: Experiment with scrolling and zooming and such things
+    - Simon: Goof off. Or do some random labyrinthing. Maybe. Maybe not. Maybe fuck yourself.

@@ -7,7 +7,7 @@ from roomtest import RoomTester
 
 pygame.display.set_caption('PyLap - Prototype')
 
-Lab = RoomTester(50, 50).generate_labyrinth()
+Lab = RoomTester(100, 100).generate_labyrinth()
 
 PS = PlayScreen
 WholeScreen = PS.WholeScreen(Lab)
