@@ -22,7 +22,8 @@ class CaveLabGenerator :
         self.min_room_dims = (10,10)
         self.max_room_dims = (20,20)
         self.boundary_buffer = 5
-        self.corridor_density = .5
+        self.corridor_density = .5          # Between 0 and 1, indicates probability of additional corridors being added
+        self.winding_coefficient = .9       # Probability of a corridors changing directions
         self.room_boundary_buffer = 5
 
     def _point_neighbours(self, point) :
@@ -55,19 +56,46 @@ class CaveLabGenerator :
                     room_dict[nb] = 0
         return room_dict
 
+    def _feasible_directions(self, position, from_list, forbidden_dir = None) :
+        feasible = []
+        for d in from_list :
+            p = tuple(map(sum,zip(position, d)))
+            if d != forbidden_dir and min(p[0],p[1],self.width-p[0]-1,self.height-p[1]-1) > self.boundary_buffer :
+                feasible += [d]
+        return feasible
+
+    def _manhattan_dist(self, p1, p2) :
+        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
     def _build_corrdior(self, dict1, dict2) :
         start_point = random.choice(list(dict1.keys()))
-        (ex,ey) = random.choice(list(dict2.keys()))
-        (cx,cy) = start_point
+        end_point = random.choice(list(dict2.keys()))
+        current_point = start_point
         corr_dict = {}
-        while (cx,cy) != (ex,ey) :
-            xsign = (ex > cx) - (ex < cx)
-            ysign = (ey > cy) - (ey < cy)
-            if abs(ex-cx) > abs(ey-cy) :
-                cx += xsign
-            else :
-                cy += ysign
-            corr_dict[(cx,cy)] = 0
+        direction_list = [ (1,0), (-1,0) , (0,1), (0,-1) ]
+        direction = (0,0)
+        total_dist = self._manhattan_dist(start_point, end_point)
+        current_dist = total_dist
+        elapsed_dist = 0
+        while current_point != end_point :
+            next_directions = self._feasible_directions( current_point, direction_list, tuple(map( lambda x : -x, direction)))
+            if direction not in next_directions or random.random() <= self.winding_coefficient :
+                #Sort directions into those increasing and decreasing distance
+                inc_dirs, dec_dirs = [],[]
+                for d in next_directions :
+                    if self._manhattan_dist( tuple(map(sum,zip(current_point,d))), end_point) >= current_dist :
+                        inc_dirs += [d]
+                    else :
+                        dec_dirs += [d]
+                dec_prob =  elapsed_dist / (total_dist  * self.winding_coefficient**2)
+                if len(dec_dirs) > 0 and (len(inc_dirs) == 0 or random.random() <= dec_prob) :
+                    direction = random.choice(dec_dirs)
+                else :
+                    direction = random.choice(inc_dirs)
+            current_point = tuple(map(sum,zip(current_point, direction)))
+            current_dist = self._manhattan_dist(current_point, end_point)
+            elapsed_dist = elapsed_dist + 1
+            corr_dict[current_point] = 0
         return corr_dict
 
 
