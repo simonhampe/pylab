@@ -1,7 +1,9 @@
+import pdb
 import random
 import RandomTools
 from Labyrinth import Labyrinth
 from pygame import Rect
+import GridTools
 
 """
 Contains the definition of the cave labyrinth generator
@@ -60,12 +62,9 @@ class CaveLabGenerator :
         feasible = []
         for d in from_list :
             p = tuple(map(sum,zip(position, d)))
-            if d != forbidden_dir and min(p[0],p[1],self.width-p[0]-1,self.height-p[1]-1) > self.boundary_buffer :
+            if d != forbidden_dir and min(p[0],p[1],self.width-p[0]-1,self.height-p[1]-1) >= self.boundary_buffer :
                 feasible += [d]
         return feasible
-
-    def _manhattan_dist(self, p1, p2) :
-        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
     def _build_corrdior(self, dict1, dict2) :
         start_point = random.choice(list(dict1.keys()))
@@ -74,27 +73,28 @@ class CaveLabGenerator :
         corr_dict = {}
         direction_list = [ (1,0), (-1,0) , (0,1), (0,-1) ]
         direction = (0,0)
-        total_dist = self._manhattan_dist(start_point, end_point)
+        total_dist = GridTools.manhattan_distance(start_point, end_point)
         current_dist = total_dist
-        elapsed_dist = 0
+        dec_prob = .7
         while current_point != end_point :
+            if dec_prob > 1000 :
+                pdb.set_trace()
             next_directions = self._feasible_directions( current_point, direction_list, tuple(map( lambda x : -x, direction)))
-            if direction not in next_directions or random.random() <= self.winding_coefficient :
+            if direction not in next_directions or random.random() <= self.winding_coefficient or dec_prob >= 1 :
                 #Sort directions into those increasing and decreasing distance
                 inc_dirs, dec_dirs = [],[]
                 for d in next_directions :
-                    if self._manhattan_dist( tuple(map(sum,zip(current_point,d))), end_point) >= current_dist :
+                    if GridTools.manhattan_distance( tuple(map(sum,zip(current_point,d))), end_point) >= current_dist :
                         inc_dirs += [d]
                     else :
                         dec_dirs += [d]
-                dec_prob =  elapsed_dist / (total_dist  * self.winding_coefficient**2)
                 if len(dec_dirs) > 0 and (len(inc_dirs) == 0 or random.random() <= dec_prob) :
                     direction = random.choice(dec_dirs)
                 else :
                     direction = random.choice(inc_dirs)
+            dec_prob = dec_prob + (1/ total_dist * self.winding_coefficient**2)
             current_point = tuple(map(sum,zip(current_point, direction)))
-            current_dist = self._manhattan_dist(current_point, end_point)
-            elapsed_dist = elapsed_dist + 1
+            current_dist = GridTools.manhattan_distance(current_point, end_point)
             corr_dict[current_point] = 0
         return corr_dict
 
@@ -102,11 +102,11 @@ class CaveLabGenerator :
     def generate_labyrinth(self) :
         roomlist = []
         # Construct random rooms: First pick random rectangles, then fill with cellular automata
-        for t in range(self.room_tries+1) :
-            rlft = random.randint(self.boundary_buffer, self.width - self.min_room_dims[0] - self.boundary_buffer)
-            rtop = random.randint(self.boundary_buffer, self.height- self.min_room_dims[1] - self.boundary_buffer)
-            rwdt = random.randint(self.min_room_dims[0], min(self.max_room_dims[0], self.width - rlft - self.boundary_buffer))
-            rhgt = random.randint(self.min_room_dims[1], min(self.max_room_dims[1], self.height - rtop - self.boundary_buffer))
+        for t in range(self.room_tries) :
+            rlft = random.randint(self.boundary_buffer, self.width - self.min_room_dims[0] - self.boundary_buffer - 1 )
+            rtop = random.randint(self.boundary_buffer, self.height- self.min_room_dims[1] - self.boundary_buffer - 1 )
+            rwdt = random.randint(self.min_room_dims[0]-1, min(self.max_room_dims[0], self.width - rlft - self.boundary_buffer)-2)
+            rhgt = random.randint(self.min_room_dims[1]-1, min(self.max_room_dims[1], self.height - rtop - self.boundary_buffer-2))
             nextroom = Rect(rlft, rtop, rwdt, rhgt)
             if nextroom.collidelist(roomlist) == -1 :
                roomlist += [nextroom]
