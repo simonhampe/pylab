@@ -1,4 +1,3 @@
-import pdb
 import random
 import RandomTools
 from Labyrinth import Labyrinth
@@ -20,12 +19,12 @@ class CaveLabGenerator :
     def __init__(self, width, height) :
         self.width = width
         self.height = height
-        self.room_tries =10
-        self.min_room_dims = (10,10)
-        self.max_room_dims = (20,20)
+        self.room_tries = 7
+        self.min_room_dims = (5,5)
+        self.max_room_dims = (10,10)
         self.boundary_buffer = 5
-        self.corridor_density = .5          # Between 0 and 1, indicates probability of additional corridors being added
-        self.winding_coefficient = .9       # Probability of a corridors changing directions
+        self.corridor_density = .3          # Between 0 and 1, indicates probability of additional corridors being added
+        self.winding_coefficient = .7       # Probability of a corridors changing directions
         self.room_boundary_buffer = 5
 
     def _point_neighbours(self, point) :
@@ -75,10 +74,9 @@ class CaveLabGenerator :
         direction = (0,0)
         total_dist = GridTools.manhattan_distance(start_point, end_point)
         current_dist = total_dist
-        dec_prob = .7
+        dec_prob = .3
+        thickness = 1
         while current_point != end_point :
-            if dec_prob > 1000 :
-                pdb.set_trace()
             next_directions = self._feasible_directions( current_point, direction_list, tuple(map( lambda x : -x, direction)))
             if direction not in next_directions or random.random() <= self.winding_coefficient or dec_prob >= 1 :
                 #Sort directions into those increasing and decreasing distance
@@ -95,7 +93,8 @@ class CaveLabGenerator :
             dec_prob = dec_prob + (1/ total_dist * self.winding_coefficient**2)
             current_point = tuple(map(sum,zip(current_point, direction)))
             current_dist = GridTools.manhattan_distance(current_point, end_point)
-            corr_dict[current_point] = 0
+            for q in GridTools.manhattan_disc(current_point, thickness) :
+                corr_dict[q] = 0
         return corr_dict
 
 
