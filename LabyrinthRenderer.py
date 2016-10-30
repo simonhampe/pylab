@@ -1,4 +1,10 @@
+import LabyrinthConstants
+
 class LabyrinthRenderer :
+
+    """
+    ASCII drawer for a labyrinth
+    """
 
     def __init__(self, labyrinth) :
         self.labyrinth = labyrinth
@@ -8,7 +14,10 @@ class LabyrinthRenderer :
             for x in range(self.labyrinth.width) :
                 try :
                     dpoint = self.labyrinth.data[(x,y)]
-                    print(chr(9608) if dpoint else " ", end="")
+                    if dpoint == LabyrinthConstants.LAB_NOTHING :
+                        print("X",end="")
+                    if dpoint == LabyrinthConstants.LAB_FLOOR :
+                        print(" ",end="")
                 except KeyError:
-                    print("X", end="")
+                    print(chr(9608), end="")
             print("")

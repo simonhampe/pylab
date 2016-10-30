@@ -1,7 +1,23 @@
+import math
+from functools import reduce
+from operator import mul
 
 """
 Contains helper functions for general grid operations
 """
+
+def binom(n,k) :
+    """
+    Computes binomial n choose k
+    """
+    if n < 0:
+        return 0
+    denom = reduce(mul, range(n-k+1,n+1),1)
+    try :
+        num = math.factorial(k)
+    except ValueError :
+        return 0
+    return int(denom/num)
 
 def manhattan_distance(p1,p2) :
     """

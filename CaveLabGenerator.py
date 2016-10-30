@@ -1,8 +1,11 @@
 import random
 import RandomTools
+import Labyrinth
 from Labyrinth import Labyrinth
+import LabyrinthConstants
 from pygame import Rect
 import GridTools
+import Bezier
 
 """
 Contains the definition of the cave labyrinth generator
@@ -19,12 +22,13 @@ class CaveLabGenerator :
     def __init__(self, width, height) :
         self.width = width
         self.height = height
-        self.room_tries = 7
-        self.min_room_dims = (5,5)
-        self.max_room_dims = (10,10)
+        self.room_tries = 10
+        self.min_room_dims = (10,10)
+        self.max_room_dims = (20,20)
         self.boundary_buffer = 5
-        self.corridor_density = .3          # Between 0 and 1, indicates probability of additional corridors being added
+        self.corridor_density = 0.1          # Between 0 and 1, indicates probability of additional corridors being added
         self.winding_coefficient = .7       # Probability of a corridors changing directions
+        self.winding_number = 10
         self.room_boundary_buffer = 5
 
     def _point_neighbours(self, point) :
@@ -54,7 +58,7 @@ class CaveLabGenerator :
             if random.randint(1,100) <= self._boundary_penalty( room, (ax,ay), self.room_boundary_buffer) * ap :
                 for nb in deadnb :
                     queue = queue + [ (nb[0], nb[1], newprob)]
-                    room_dict[nb] = 0
+                    room_dict[nb] = LabyrinthConstants.LAB_FLOOR
         return room_dict
 
     def _feasible_directions(self, position, from_list, forbidden_dir = None) :
@@ -65,37 +69,48 @@ class CaveLabGenerator :
                 feasible += [d]
         return feasible
 
-    def _build_corrdior(self, dict1, dict2) :
+    def _build_corrdior(self,dict1,dict2) :
         start_point = random.choice(list(dict1.keys()))
         end_point = random.choice(list(dict2.keys()))
-        current_point = start_point
+        plist = [start_point]
+        for i in range(0,self.winding_number) :
+            plist += [ (random.randint(self.boundary_buffer,self.width - self.boundary_buffer-1), random.randint(self.boundary_buffer, self.height - self.boundary_buffer-1))]
+        plist += [end_point]
         corr_dict = {}
-        direction_list = [ (1,0), (-1,0) , (0,1), (0,-1) ]
-        direction = (0,0)
-        total_dist = GridTools.manhattan_distance(start_point, end_point)
-        current_dist = total_dist
-        dec_prob = .3
-        thickness = 1
-        while current_point != end_point :
-            next_directions = self._feasible_directions( current_point, direction_list, tuple(map( lambda x : -x, direction)))
-            if direction not in next_directions or random.random() <= self.winding_coefficient or dec_prob >= 1 :
-                #Sort directions into those increasing and decreasing distance
-                inc_dirs, dec_dirs = [],[]
-                for d in next_directions :
-                    if GridTools.manhattan_distance( tuple(map(sum,zip(current_point,d))), end_point) >= current_dist :
-                        inc_dirs += [d]
-                    else :
-                        dec_dirs += [d]
-                if len(dec_dirs) > 0 and (len(inc_dirs) == 0 or random.random() <= dec_prob) :
-                    direction = random.choice(dec_dirs)
-                else :
-                    direction = random.choice(inc_dirs)
-            dec_prob = dec_prob + (1/ total_dist * self.winding_coefficient**2)
-            current_point = tuple(map(sum,zip(current_point, direction)))
-            current_dist = GridTools.manhattan_distance(current_point, end_point)
-            for q in GridTools.manhattan_disc(current_point, thickness) :
-                corr_dict[q] = 0
+        Bezier.draw_bezier_to_dictionary(corr_dict, plist, 1000,1)
         return corr_dict
+
+    #def _build_corrdior(self, dict1, dict2) :
+    #    start_point = random.choice(list(dict1.keys()))
+    #    end_point = random.choice(list(dict2.keys()))
+    #    current_point = start_point
+    #    corr_dict = {}
+    #    direction_list = [ (1,0), (-1,0) , (0,1), (0,-1) ]
+    #    direction = (0,0)
+    #    total_dist = GridTools.manhattan_distance(start_point, end_point)
+    #    current_dist = total_dist
+    #    dec_prob = .3
+    #    thickness = 1
+    #    while current_point != end_point :
+    #        next_directions = self._feasible_directions( current_point, direction_list, tuple(map( lambda x : -x, direction)))
+    #        if direction not in next_directions or random.random() <= self.winding_coefficient :
+    #            #Sort directions into those increasing and decreasing distance
+    #            inc_dirs, dec_dirs = [],[]
+    #            for d in next_directions :
+    #                if GridTools.manhattan_distance( tuple(map(sum,zip(current_point,d))), end_point) >= current_dist :
+    #                    inc_dirs += [d]
+    #                else :
+    #                    dec_dirs += [d]
+    #            if len(dec_dirs) > 0 and (len(inc_dirs) == 0 or random.random() <= dec_prob) :
+    #                direction = random.choice(dec_dirs)
+    #            else :
+    #                direction = random.choice(inc_dirs)
+    #        dec_prob = dec_prob + (1/ total_dist * self.winding_coefficient**2)
+    #        current_point = tuple(map(sum,zip(current_point, direction)))
+    #        current_dist = GridTools.manhattan_distance(current_point, end_point)
+    #        for q in GridTools.manhattan_disc(current_point, thickness) :
+    #            corr_dict[q] = LabyrinthConstants.LAB_FLOOR
+    #    return corr_dict
 
 
     def generate_labyrinth(self) :

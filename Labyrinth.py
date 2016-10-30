@@ -1,4 +1,4 @@
-# Convention: Tile is identified by 0 (floor) / 1 (wall)
+# Convention: Any key not contained is a wall
 
 class Labyrinth :
 
