@@ -9,7 +9,7 @@ from CaveLabGenerator import CaveLabGenerator
 
 pygame.display.set_caption('PyLap - Prototype')
 
-Lab = CaveLabGenerator.CaveLabGenerator(511, 511).generate_labyrinth()
+Lab = CaveLabGenerator(511, 511).generate_labyrinth()
 
 WS = PlayScreen.WholeScreen(Lab)
 
