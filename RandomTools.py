@@ -45,17 +45,16 @@ def random_spanning_graph(n_nodes, edge_probability = 0.5) :
             tree_edges += [ie]
     return tree_edges
 
-def discrete_brownian_motion(length, terminal_values, bounds) :
+def discrete_brownian_motion(terminal_values, bounds) :
     """
     Creates a discrete tied brownian motion as an integer sequence.
     Arguments:
-        length -- The lenght of the sequence
         terminal_values -- A tuple of (start_value, end_value). Fixes the start and end value.
-        bounds -- A tuple of (min_value, max_value). Fixes lower and upper bounds
-    Returns a list of ints
+        bounds -- A list of tuples of the form (min_value, max_value). Fixes lower and upper bounds for each entry.
+        Returns a list of ints of length len(bounds)
     """
     start_value, end_value = terminal_values
-    min_value, max_value = bounds
+    length = len(bounds)
     result = [start_value] * length
     result[-1] = end_value
     current_value = start_value
@@ -63,7 +62,7 @@ def discrete_brownian_motion(length, terminal_values, bounds) :
         valid_increments = []
         for delta in [-1,0,1] :
             delta_value = current_value + delta
-            if delta_value > max_value or delta_value < min_value :
+            if delta_value > bounds[i][1] or delta_value < bounds[i][0] :
                 continue
             if abs(end_value - delta_value) > length -i -1 :
                 continue

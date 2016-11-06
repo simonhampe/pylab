@@ -2,6 +2,18 @@
 Contains convenience functions for adding "vectors" and "matrices"
 """
 
+def vector_neg(vector) :
+    """
+    Takes a tuple and inverts the sign of each entry
+    """
+    return tuple(map(lambda x : -x, vector))
+
+def matrix_neg(matrix):
+    """
+    Takes a list of tuples and inverts the sign of each entry
+    """
+    return list( map(lambda x : vector_neg(x),*matrix))
+
 def vector_sum(*vectors) :
     """
     This takes a list of tuples (of the same length) and returns a tuple
