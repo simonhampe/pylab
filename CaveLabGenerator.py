@@ -17,21 +17,16 @@ class CaveLabGenerator :
     Generates a labyrinth consisting of irregular caves connected by winding corridors
     """
 
-    #TODO All hardcoded values should probably be relative to input
-
     def __init__(self, width, height) :
         self.width = width
         self.height = height
-        self.min_room_dims = (int(width/10),int(height/10))
-        self.max_room_dims = (int(width/5),int(width/5))
+        self.min_room_dims = (int(width/5),int(height/5))
+        self.max_room_dims = (int(width/3),int(width/3))
         avg_room_size = (self.min_room_dims[0] + self.max_room_dims[0])*(self.min_room_dims[1] + self.max_room_dims[1]) * 1/4
-        print(avg_room_size)
         self.room_tries = int(width * height / (avg_room_size))
-        print(self.room_tries)
         self.boundary_buffer = int(max( self.min_room_dims[0], self.min_room_dims[1]) / 2)
         self.corridor_density = 0.1          # Between 0 and 1, indicates probability of additional corridors being added
-        self.winding_coefficient = .7       # Probability of a corridor changing directions
-        self.winding_number = 10
+        self.winding_number = 2
         self.room_boundary_buffer = 5
 
     def _point_neighbours(self, point) :
@@ -72,48 +67,42 @@ class CaveLabGenerator :
                 feasible += [d]
         return feasible
 
-    #def _build_corrdior(self,dict1,dict2) :
-    #    start_point = random.choice(list(dict1.keys()))
-    #    end_point = random.choice(list(dict2.keys()))
-    #    plist = [start_point]
-    #    for i in range(0,self.winding_number) :
-    #        plist += [ (random.randint(self.boundary_buffer,self.width - self.boundary_buffer-1), random.randint(self.boundary_buffer, self.height - self.boundary_buffer-1))]
-    #    plist += [end_point]
-    #    corr_dict = {}
-    #    Bezier.draw_bezier_to_dictionary(corr_dict, plist, 1000,1)
-    #    return corr_dict
-
-    def _build_corrdior(self, dict1, dict2) :
-        start_point = random.choice(list(dict1.keys()))
-        end_point = random.choice(list(dict2.keys()))
-        current_point = start_point
-        corr_dict = {}
-        direction_list = [ (1,0), (-1,0) , (0,1), (0,-1) ]
-        direction = (0,0)
-        total_dist = GridTools.manhattan_distance(start_point, end_point)
-        current_dist = total_dist
-        dec_prob = .3
-        thickness = 1
-        while current_point != end_point :
-            next_directions = self._feasible_directions( current_point, direction_list, tuple(map( lambda x : -x, direction)))
-            if direction not in next_directions or random.random() <= self.winding_coefficient :
-                #Sort directions into those increasing and decreasing distance
-                inc_dirs, dec_dirs = [],[]
-                for d in next_directions :
-                    if GridTools.manhattan_distance( tuple(map(sum,zip(current_point,d))), end_point) >= current_dist :
-                        inc_dirs += [d]
-                    else :
-                        dec_dirs += [d]
-                if len(dec_dirs) > 0 and (len(inc_dirs) == 0 or random.random() <= dec_prob) :
-                    direction = random.choice(dec_dirs)
+    def _shortest_straight_path_segments(self, list_of_points) :
+        result = [list_of_points[0]]
+        current_point = result[0]
+        next_point_index = 1
+        end = list_of_points[-1]
+        while current_point != end :
+            next_point = list_of_points[next_point_index]
+            while current_point != next_point :
+                dx = next_point[0] - current_point[0]
+                dy = next_point[1] - current_point[1]
+                if abs(dx) >= abs(dy) :
+                    current_point = tuple(map(sum, zip(current_point, (int(dx/abs(dx)),0))))
                 else :
-                    direction = random.choice(inc_dirs)
-            dec_prob = dec_prob + (1/ total_dist);# * self.winding_coefficient)**2
-            current_point = tuple(map(sum,zip(current_point, direction)))
-            current_dist = GridTools.manhattan_distance(current_point, end_point)
-            for q in GridTools.manhattan_disc(current_point, thickness) :
+                    current_point = tuple(map(sum, zip(current_point, (0,int(dy/abs(dy))))))
+                result += [current_point]
+            next_point_index = next_point_index + 1
+        return result
+
+    def _random_path_interpolation(self, list_of_points) :
+        linear_pieces = self._shortest_straight_path_segments(list_of_points)
+        corr_dict = {}
+        delta = list(zip(*map(lambda x : RandomTools.discrete_brownian_motion(len(linear_pieces), (0,0), (-50,50)),[0,1])))
+        final_path = list(map( lambda x : tuple(map(sum,zip(*x))),zip(delta,linear_pieces)))
+        for p in final_path :
+            for q in GridTools.manhattan_disc(p,2) :
                 corr_dict[q] = LabyrinthConstants.LAB_FLOOR
         return corr_dict
+
+    def _build_corrdior(self,dict1,dict2) :
+        start_point = random.choice(list(dict1.keys()))
+        end_point = random.choice(list(dict2.keys()))
+        plist = [start_point]
+        for i in range(0,self.winding_number) :
+            plist += [ (random.randint(self.boundary_buffer,self.width - self.boundary_buffer-1), random.randint(self.boundary_buffer, self.height - self.boundary_buffer-1))]
+        plist += [end_point]
+        return self._random_path_interpolation(plist)
 
 
     def generate_labyrinth(self) :
