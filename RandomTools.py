@@ -45,19 +45,23 @@ def random_spanning_graph(n_nodes, edge_probability = 0.5) :
             tree_edges += [ie]
     return tree_edges
 
-def discrete_brownian_motion(terminal_values, bounds) :
+def discrete_brownian_motion(terminal_values, bounds, smoothness_interval = 1) :
     """
     Creates a discrete tied brownian motion as an integer sequence.
     Arguments:
         terminal_values -- A tuple of (start_value, end_value). Fixes the start and end value.
         bounds -- A list of tuples of the form (min_value, max_value). Fixes lower and upper bounds for each entry.
         Returns a list of ints of length len(bounds)
+    Keyword argurments:
+        smoothness_interval -- An increment/decrement in the brownian motion will basically only occur every
+        n steps, where n = smoothness_interval. So, if smoothness_interval = 1, that is the same as applying no smoothing
     """
     start_value, end_value = terminal_values
     length = len(bounds)
     result = [start_value] * length
     result[-1] = end_value
     current_value = start_value
+    smoothness_counter = 0
     for i in range(1, length-1) :
         valid_increments = []
         for delta in [-1,0,1] :
@@ -68,31 +72,8 @@ def discrete_brownian_motion(terminal_values, bounds) :
                 continue
             valid_increments += [delta]
         final_delta = random.choice(valid_increments)
-        current_value = current_value + final_delta
+        if smoothness_counter == 0 or 0 not in valid_increments :
+            current_value = current_value + final_delta
+        smoothness_counter = smoothness_interval if smoothness_counter == 0 else smoothness_counter-1
         result[i] = current_value
     return result
-
-# FIXME Shorter bounds will have leaps that produce impossible paths, i.e. empty choices
-def smooth_discrete_brownian_motion( terminal_values, bounds, smoothness_interval = 5) :
-    """
-    Takes the same values as discrete_brownian_motion, plus an additional
-    Keyword argument:
-        smoothness_interval -- An increment/decrement in the brownian motion will only occur every
-        n steps, where n = smoothness_interval. So, if smoothness_interval = 1, that is the same as
-        directly calling discrete_brownian_motion
-    Note that this implementation assumes that the minimal bounds form a convex and the maximal bounds form a
-    concave function.
-    """
-    # Compute shorter motion first
-    length = len(bounds)
-    shorter_bounds = [ bounds[i] for i in range(0,length, smoothness_interval)]
-    shorter_motion = discrete_brownian_motion(terminal_values, shorter_bounds)
-    # Copy values
-    result = [0]*length
-    remainder = length % smoothness_interval
-    for i in range(0,len(shorter_motion)-(remainder > 0)) :
-        result[i*smoothness_interval : (i+1)*smoothness_interval] = [shorter_motion[i]]*smoothness_interval
-    if remainder > 0 :
-        result[-remainder:] = [shorter_motion[-1]]*remainder
-    return result
-

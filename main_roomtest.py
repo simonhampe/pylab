@@ -12,6 +12,7 @@ import random
 w = 150
 h = 50
 LG = CaveLabGenerator(w,h)
-L = LG.generate_labyrinth()
+for i in range(0,1000) :
+    L = LG.generate_labyrinth()
 LR = LabyrinthRenderer(L)
 LR.draw()
