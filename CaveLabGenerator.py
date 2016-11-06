@@ -5,6 +5,7 @@ from Labyrinth import Labyrinth
 import LabyrinthConstants
 from pygame import Rect
 import GridTools
+from MatrixTools import vector_sum, matrix_sum
 import Bezier
 
 """
@@ -32,7 +33,7 @@ class CaveLabGenerator :
     def _point_neighbours(self, point) :
         result = []
         for t in [ (a,b) for a in [-1,0,1] for b in [-1,0,1] if (a,b) not in [(0,0)]] :
-            sp = tuple(map(sum, zip(point,t)))
+            sp = vector_sum(point,t)
             if sp[0] >= 0 and sp[0] < self.width and sp[1] >= 0 and sp[1] < self.height:
                 result = result + [sp]
         return result
@@ -62,7 +63,7 @@ class CaveLabGenerator :
     def _feasible_directions(self, position, from_list, forbidden_dir = None) :
         feasible = []
         for d in from_list :
-            p = tuple(map(sum,zip(position, d)))
+            p = vector_sum(position,d)
             if d != forbidden_dir and min(p[0],p[1],self.width-p[0]-1,self.height-p[1]-1) >= self.boundary_buffer :
                 feasible += [d]
         return feasible
@@ -78,9 +79,9 @@ class CaveLabGenerator :
                 dx = next_point[0] - current_point[0]
                 dy = next_point[1] - current_point[1]
                 if abs(dx) >= abs(dy) :
-                    current_point = tuple(map(sum, zip(current_point, (int(dx/abs(dx)),0))))
+                    current_point = vector_sum(current_point,(int(dx/abs(dx)),0))
                 else :
-                    current_point = tuple(map(sum, zip(current_point, (0,int(dy/abs(dy))))))
+                    current_point = vector_sum(current_point, (0,int(dy/abs(dy))))
                 result += [current_point]
             next_point_index = next_point_index + 1
         return result
@@ -89,7 +90,7 @@ class CaveLabGenerator :
         linear_pieces = self._shortest_straight_path_segments(list_of_points)
         corr_dict = {}
         delta = list(zip(*map(lambda x : RandomTools.discrete_brownian_motion(len(linear_pieces), (0,0), (-50,50)),[0,1])))
-        final_path = list(map( lambda x : tuple(map(sum,zip(*x))),zip(delta,linear_pieces)))
+        final_path = matrix_sum(linear_pieces, delta)
         for p in final_path :
             for q in GridTools.manhattan_disc(p,2) :
                 corr_dict[q] = LabyrinthConstants.LAB_FLOOR
