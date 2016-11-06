@@ -72,6 +72,7 @@ def discrete_brownian_motion(terminal_values, bounds) :
         result[i] = current_value
     return result
 
+# FIXME Shorter bounds will have leaps that produce impossible paths, i.e. empty choices
 def smooth_discrete_brownian_motion( terminal_values, bounds, smoothness_interval = 5) :
     """
     Takes the same values as discrete_brownian_motion, plus an additional

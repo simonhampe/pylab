@@ -89,10 +89,10 @@ class CaveLabGenerator :
     def _random_path_interpolation(self, list_of_points) :
         linear_pieces = self._shortest_straight_path_segments(list_of_points)
         corr_dict = {}
-        xlimits = (self.boundary_buffer, self.width - self.boundary_buffer - 2)
-        ylimits = (self.boundary_buffer, self.height - self.boundary_buffer -2)
+        xlimits = (self.boundary_buffer, self.width - self.boundary_buffer - 1)
+        ylimits = (self.boundary_buffer, self.height - self.boundary_buffer -1)
         bounds = [list( map( lambda p : vector_sum(xlimits, vector_neg(p)), linear_pieces)),list( map( lambda p : vector_sum(ylimits, vector_neg(p)), linear_pieces))]
-        delta = list(zip(*map(lambda x : RandomTools.smooth_discrete_brownian_motion((0,0), bounds[x],3),[0,1])))
+        delta = list(zip(*map(lambda x : RandomTools.discrete_brownian_motion((0,0), bounds[x]),[0,1])))
         final_path = matrix_sum(linear_pieces, delta)
         thicknesses = [2]*len(final_path) #RandomTools.discrete_brownian_motion( (1,1), [(2,4)]*len(final_path))
         for (i,p) in enumerate(final_path) :
