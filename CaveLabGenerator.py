@@ -24,10 +24,10 @@ class CaveLabGenerator :
         self.min_room_dims = (int(width/10),int(height/10))
         self.max_room_dims = (int(width/3),int(width/3))
         avg_room_size = (self.min_room_dims[0] + self.max_room_dims[0])*(self.min_room_dims[1] + self.max_room_dims[1]) * 1/4
-        self.room_tries = int(width * height / (avg_room_size)) 
+        self.room_tries = int(width * height / (avg_room_size))
         self.boundary_buffer = int(max( self.min_room_dims[0], self.min_room_dims[1]) / 2)
         self.corridor_density = 0.1          # Between 0 and 1, indicates probability of additional corridors being added
-        self.winding_number = 1
+        self.winding_number = 2
         self.room_boundary_buffer = 5
 
     def _point_neighbours(self, point) :
@@ -92,9 +92,9 @@ class CaveLabGenerator :
         xlimits = (self.boundary_buffer, self.width - self.boundary_buffer - 2)
         ylimits = (self.boundary_buffer, self.height - self.boundary_buffer -2)
         bounds = [list( map( lambda p : vector_sum(xlimits, vector_neg(p)), linear_pieces)),list( map( lambda p : vector_sum(ylimits, vector_neg(p)), linear_pieces))]
-        delta = list(zip(*map(lambda x : RandomTools.discrete_brownian_motion((0,0), bounds[x]),[0,1])))
+        delta = list(zip(*map(lambda x : RandomTools.smooth_discrete_brownian_motion((0,0), bounds[x],3),[0,1])))
         final_path = matrix_sum(linear_pieces, delta)
-        thicknesses = RandomTools.discrete_brownian_motion( (1,1), [(2,4)]*len(final_path))
+        thicknesses = [2]*len(final_path) #RandomTools.discrete_brownian_motion( (1,1), [(2,4)]*len(final_path))
         for (i,p) in enumerate(final_path) :
             for q in GridTools.manhattan_disc(p,thicknesses[i]) :
                 corr_dict[q] = LabyrinthConstants.LAB_FLOOR

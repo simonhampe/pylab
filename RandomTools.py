@@ -72,5 +72,26 @@ def discrete_brownian_motion(terminal_values, bounds) :
         result[i] = current_value
     return result
 
-
+def smooth_discrete_brownian_motion( terminal_values, bounds, smoothness_interval = 5) :
+    """
+    Takes the same values as discrete_brownian_motion, plus an additional
+    Keyword argument:
+        smoothness_interval -- An increment/decrement in the brownian motion will only occur every
+        n steps, where n = smoothness_interval. So, if smoothness_interval = 1, that is the same as
+        directly calling discrete_brownian_motion
+    Note that this implementation assumes that the minimal bounds form a convex and the maximal bounds form a
+    concave function.
+    """
+    # Compute shorter motion first
+    length = len(bounds)
+    shorter_bounds = [ bounds[i] for i in range(0,length, smoothness_interval)]
+    shorter_motion = discrete_brownian_motion(terminal_values, shorter_bounds)
+    # Copy values
+    result = [0]*length
+    remainder = length % smoothness_interval
+    for i in range(0,len(shorter_motion)-(remainder > 0)) :
+        result[i*smoothness_interval : (i+1)*smoothness_interval] = [shorter_motion[i]]*smoothness_interval
+    if remainder > 0 :
+        result[-remainder:] = [shorter_motion[-1]]*remainder
+    return result
 
