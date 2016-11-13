@@ -14,3 +14,11 @@ Summary of pow-wow on 19.10.2016:
 - Next todos:
     - Sebb: Experiment with scrolling and zooming and such things
     - Simon: Goof off. Or do some random labyrinthing. Maybe. Maybe not. Maybe fuck yourself.
+
+Summary of pow-wow on 13.11.2016:
+
+- Rooms are shit. Redo that. And maybe not with stupid fucking cellular automata... automatotons, auto... ah, fuck it.
+- Nirvana generator
+- Next goal: Have a figure that can move through the labyrinth (not through walls and nirvana) and find a goal.
+    - On goal: Create new labyrinth
+    - Do collision testing by finding the <= 4 grid fields that the player sprite can overlap.
