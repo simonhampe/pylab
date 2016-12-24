@@ -3,6 +3,7 @@ from LabyrinthRenderer import LabyrinthRenderer
 from LabyrinthGenerator import LabyrinthGenerator
 from roomtest import RoomTester
 from CaveLabGenerator import CaveLabGenerator
+from CellularGenerator import CellularGenerator
 import Bezier
 import GridTools
 import RandomTools
@@ -11,8 +12,7 @@ import random
 
 w = 150
 h = 50
-LG = CaveLabGenerator(w,h)
-for i in range(0,1000) :
-    L = LG.generate_labyrinth()
+LG = CellularGenerator(w,h) #CaveLabGenerator(w,h)
+L = LG.generate_labyrinth()
 LR = LabyrinthRenderer(L)
 LR.draw()

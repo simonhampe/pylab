@@ -3,13 +3,15 @@ import PlayScreen, Labyrinth, LabyrinthGenerator, CaveLabGenerator
 from PlayScreen import WholeScreen
 from roomtest import RoomTester
 from CaveLabGenerator import CaveLabGenerator
+from CellularGenerator import CellularGenerator
 
 # start_position = (int(Settings.map_width/4), int(Settings.map_height/4))
 # end_position = (int(Settings.map_width*3/4), int(Settings.map_height*3/4))
 
 pygame.display.set_caption('PyLap - Prototype')
 
-Lab = CaveLabGenerator(511, 511).generate_labyrinth()
+Lab = CellularGenerator(511,511).generate_labyrinth()
+#CaveLabGenerator(511, 511).generate_labyrinth()
 
 WS = PlayScreen.WholeScreen(Lab)
 

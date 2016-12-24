@@ -14,7 +14,7 @@ class LabyrinthRenderer :
             for x in range(self.labyrinth.width) :
                 try :
                     dpoint = self.labyrinth.data[(x,y)]
-                    if dpoint == LabyrinthConstants.LAB_NOTHING :
+                    if dpoint == LabyrinthConstants.LAB_NIRVANA :
                         print("X",end="")
                     if dpoint == LabyrinthConstants.LAB_FLOOR :
                         print(" ",end="")
