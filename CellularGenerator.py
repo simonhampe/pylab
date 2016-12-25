@@ -1,6 +1,6 @@
 import random
 from Labyrinth import Labyrinth
-from MatrixTools import vector_sum, matrix_sum, vector_neg
+import GridTools
 from GridMatrix import GridMatrix
 from LabyrinthConstants import LAB_WALL, LAB_FLOOR
 
@@ -50,31 +50,26 @@ class CellularGenerator :
                 queue += [x for x in nd.straight_neighbours() if x.data[room.data_index] == LAB_FLOOR]
         return component
 
-    def _make_wall(self, list_of_nodes, data_index) :
-        for nd in list_of_nodes :
-            nd.data[data_index] = LAB_WALL
-
-
-    def _keep_largest_component(self,room) :
+    def _largest_component(self,room) :
         max_component = []
         for node in room.rowwise_iterator() :
             n_cmp = self._component(room, node)
             if len(n_cmp) > len(max_component) :
-                self._make_wall(max_component, room.data_index)
                 max_component = n_cmp
-            else :
-                self._make_wall(n_cmp,room.data_index)
-
+        return max_component
 
 
     def generate_labyrinth(self) :
         room = GridMatrix(self.width, self.height, lambda r,c : [LAB_FLOOR, LAB_FLOOR] if random.randint(1,100) <= self.chance_for_floor else [LAB_WALL, LAB_WALL])
         room.data_index = 0
         self._iterate(room)
-        self._keep_largest_component(room)
+        comp = self._largest_component(room)
         rdict = {}
-        for node in room.rowwise_iterator():
-            if node.data[room.data_index] == LAB_FLOOR :
-                rdict[ (node.column, node.row) ] = LAB_FLOOR
-        return Labyrinth(self.width, self.height, (0,0), (0,0), rdict)
+        for node in comp:
+            rdict[ (node.column, node.row) ] = LAB_FLOOR
+        start_point = random.choice(list(rdict))
+        all_end_points = sorted( rdict, key= lambda p : GridTools.manhattan_distance(start_point,p))
+        end_point = all_end_points[15] #random.choice( all_end_points[ -len(all_end_points)/3 :])
+        print(start_point,end_point)
+        return Labyrinth(self.width, self.height, start_point, end_point, rdict)
 
