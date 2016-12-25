@@ -1,7 +1,8 @@
 import random
 from Labyrinth import Labyrinth
 from MatrixTools import vector_sum, matrix_sum, vector_neg
-import LabyrinthConstants
+from GridMatrix import GridMatrix
+from LabyrinthConstants import LAB_WALL, LAB_FLOOR
 
 """
  This creates a labyrinth from a single cellular automaton
@@ -17,53 +18,32 @@ class CellularGenerator :
         self.width = width
         self.height = height
         self.chance_for_floor = 45
-        self.death_limit = 3 
-        self.birth_limit =5 
-        self.iterations =  10 
+        self.death_limit = 3
+        self.birth_limit = 5
+        self.iterations =  10
 
-
-    def _fill_room(self) :
-        room = []
-        for i in range(0, self.height) :
-            row = [LabyrinthConstants.LAB_WALL] * self.width
-            for j in range(0, self.width) :
-                if random.randint(1,100) <= self.chance_for_floor :
-                    row[j] = LabyrinthConstants.LAB_FLOOR
-            room += [row]
-        return room
-
-    def _number_of_alive_neighbours(self,room,point) :
-        count = 0
-        for t in [ (a,b) for a in [-1,0,1] for b in [-1,0,1] if (a,b) != (0,0)] :
-            sp = vector_sum(point,t)
-            if sp[0] >= 0 and sp[0] < self.height and sp[1] >= 0 and sp[1] < self.width:
-                if room[sp[0]][sp[1]] == LabyrinthConstants.LAB_FLOOR :
-                    count = count + 1
-        return count
-
-    def _iterate(self, room) :
-        new_room = []
-        for i in range(0,self.height) :
-            new_room += [ [LabyrinthConstants.LAB_WALL]*self.width]
-            for j in range(0,self.width) :
-                nb_alive = self._number_of_alive_neighbours(room, (i,j))
-                if room[i][j] == LabyrinthConstants.LAB_FLOOR :
-                    new_room[i][j] = LabyrinthConstants.LAB_FLOOR if nb_alive >= self.death_limit else  LabyrinthConstants.LAB_WALL
+    def _iterate(self, room, no_of_iterations = -1) :
+        if no_of_iterations < 0 :
+            no_of_iterations = self.iterations
+        new_index = 0
+        for it in range(0, no_of_iterations) :
+            old_index = it % 2
+            new_index = (it+1) % 2
+            for node in room.rowwise_iterator() :
+                old_node_data = node.data[old_index]
+                nb_alive = len( [0 for nb in node.neighbours() if nb.data[old_index] == LAB_FLOOR])
+                if old_node_data == LAB_FLOOR :
+                    node.data[new_index] = LAB_FLOOR if nb_alive >= self.death_limit else LAB_WALL
                 else :
-                    new_room[i][j] = LabyrinthConstants.LAB_FLOOR if nb_alive >= self.birth_limit else  LabyrinthConstants.LAB_WALL
-        return new_room
+                    node.data[new_index] = LAB_FLOOR if nb_alive >= self.birth_limit else LAB_WALL
+        return new_index
 
     def generate_labyrinth(self) :
-        print("Filling room")
-        room = self._fill_room()
-        print("Iterating")
-        for it in range(0, self.iterations) :
-            room = self._iterate(room)
-        print("Copying")
+        room = GridMatrix(self.width, self.height, lambda r,c : [LAB_FLOOR, LAB_FLOOR] if random.randint(1,100) <= self.chance_for_floor else [LAB_WALL, LAB_WALL])
+        data_index = self._iterate(room)
         rdict = {}
-        for i in range(0,self.height) :
-            for j in range(0,self.width) :
-                if room[i][j] == LabyrinthConstants.LAB_FLOOR :
-                    rdict[(j,i)] = LabyrinthConstants.LAB_FLOOR
+        for node in room.rowwise_iterator() :
+            if node.data[data_index] == LAB_FLOOR :
+                rdict[ (node.column, node.row) ] = LAB_FLOOR
         return Labyrinth(self.width, self.height, (0,0), (0,0), rdict)
 
