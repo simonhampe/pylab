@@ -30,6 +30,9 @@ class GridNode :
     def neighbours(self) :
         return [x for x in [self.n, self.ne, self.e, self.se, self.s, self.sw, self.w, self.nw] if x]
 
+    def straight_neighbours(self):
+        return [x for x in [self.n, self.e, self.s, self.w] if x]
+
 
 class GridMatrix :
 
