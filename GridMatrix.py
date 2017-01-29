@@ -69,6 +69,21 @@ class GridMatrix :
             n_node = self.row_heads[-1]
             ne_node = n_node.e
 
+    def node(self, row, column) :
+        rh = self.row_heads[row]
+        for i in range(0, column) :
+            rh = rh.e
+        return rh
+
+    def square(self, from_row, to_row, from_col, to_col) :
+        ll = []
+        for rh in self.row_heads[from_row : to_row + 1] :
+            for i in range(0,to_col) :
+                if i >= from_col :
+                    ll.append(rh)
+                rh = rh.e
+        return ll
+
     def rowwise_iterator(self) :
         for rh in self.row_heads :
             node = rh
