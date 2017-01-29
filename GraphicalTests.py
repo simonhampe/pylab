@@ -1,5 +1,6 @@
 import sys, pygame, Settings, Graphics
-import PlayScreen, Labyrinth, LabyrinthGenerator, CaveLabGenerator
+import PlayScreen, Labyrinth, LabyrinthGenerator, CaveLabGenerator, Player
+import GameState
 from PlayScreen import WholeScreen
 from roomtest import RoomTester
 from CaveLabGenerator import CaveLabGenerator
@@ -10,10 +11,11 @@ from CellularGenerator import CellularGenerator
 
 pygame.display.set_caption('PyLap - Prototype')
 
-Lab = CellularGenerator(511,511).generate_labyrinth()
+
+GS = GameState.GameState(CellularGenerator(63,63))
 #CaveLabGenerator(511, 511).generate_labyrinth()
 
-WS = PlayScreen.WholeScreen(Lab)
+WS = PlayScreen.WholeScreen(GS)
 
 while True:
 

@@ -1,19 +1,24 @@
+import LabyrinthConstants
+
 # Convention: Any key not contained is a wall
 
 class Labyrinth :
 
-    def __init__(self, width, height, start, end, data) :
+    def __init__(self, width, height, start, data) :
         self.width = width
         self.height = height
         self.start = start
-        self.end = end
         self.data = data
+
+    def value_at(self, row, column) :
+        return self.data.get( (row,column), LabyrinthConstants.LAB_WALL)
+
+    def get_start(self) :
+        return self.start
 
     def scale(self, factor) :
         self.width = int(self.width * factor)
         self.height = int(self.height * factor)
-        self.start = tuple( [int(x * factor) for x in self.start])
-        self.end = tuple( [int(x * factor) for x in self.end])
         new_data = {}
         for i in range(0,self.width) :
             for j in range(0,self.height) :

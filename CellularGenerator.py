@@ -2,7 +2,7 @@ import random
 from Labyrinth import Labyrinth
 import GridTools
 from GridMatrix import GridMatrix
-from LabyrinthConstants import LAB_WALL, LAB_FLOOR
+from LabyrinthConstants import *
 
 """
  This creates a labyrinth from a single cellular automaton
@@ -18,9 +18,9 @@ class CellularGenerator :
         self.width = width
         self.height = height
         self.chance_for_floor = 45
-        self.death_limit = 3
-        self.birth_limit = 5
-        self.iterations =  10
+        self.death_limit = 3 
+        self.birth_limit = 5 
+        self.iterations = 3 
 
     def _iterate(self, room, no_of_iterations = -1) :
         if no_of_iterations < 0 :
@@ -70,6 +70,6 @@ class CellularGenerator :
         start_point = random.choice(list(rdict))
         all_end_points = sorted( rdict, key= lambda p : GridTools.manhattan_distance(start_point,p))
         end_point = all_end_points[15] #random.choice( all_end_points[ -len(all_end_points)/3 :])
-        print(start_point,end_point)
-        return Labyrinth(self.width, self.height, start_point, end_point, rdict)
+        rdict[ end_point ] = LAB_END
+        return Labyrinth(self.width, self.height, start_point, rdict)
 

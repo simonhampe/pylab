@@ -6,13 +6,13 @@ from Labyrinth import Labyrinth
 #Functions without classes
 #Check user interactions
 def check_user_interactions(WS):
-    
+
     #key press events
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LCTRL] and keys[pygame.K_d]:
         pygame.quit()
         sys.exit()
-    
+
     #pygame events
     for event in pygame.event.get():
         #exit event
@@ -26,22 +26,22 @@ def check_user_interactions(WS):
                 Settings.map_scaling_factor *= 2
             #scroll DOWN, zoom IN
             if event.button == 5:
-                Settings.map_scaling_factor /= 2 
+                Settings.map_scaling_factor /= 2
             Settings.map_scaling_factor = max(min(Settings.map_scaling_factor, 1), 1 / 16)
             Graphics.Tilemap_scaled = pygame.transform.scale(Graphics.Tilemap_unscaled,
                                                      (int(Graphics.Tilemap_unscaled.get_width() * Settings.map_scaling_factor),
                                                       int(Graphics.Tilemap_unscaled.get_height() * Settings.map_scaling_factor)))
             WS.Tilemap.x = 0
             WS.Tilemap.y = 0
-            
+
 #collection of all the action on the whole screen
 class WholeScreen:
 
-    def __init__(self, Labyrinth):
+    def __init__(self, game_state):
 #         self.BackgroundMap = BackgroundMap()
 #         self.Healthbar = Healthbar()
 #         self.Manabar = Manabar()
-        self.Tilemap = Tilemap(Labyrinth)
+        self.Tilemap = Tilemap(game_state)
         Graphics.Tilemap_unscaled = self.Tilemap.generate_whole_tilemap()
         Graphics.Tilemap_scaled = Graphics.Tilemap_unscaled
 
@@ -51,13 +51,14 @@ class WholeScreen:
 #         self.Manabar.draw(surface)
         self.Tilemap.draw(surface)
 
+
     def move(self):
 #         self.BackgroundMap.move()
         self.Tilemap.move()
 
 #class for moving and drawing the background map
 # class BackgroundMap:
-# 
+#
 #     def __init__(self):
 #         self.image = Graphics.background
 #         self.x = 0
@@ -66,11 +67,11 @@ class WholeScreen:
 #         self.size = Settings.backgroundmap_size
 #         self.height = Settings.background_height
 #         self.width = Settings.background_width
-# 
+#
 #     def move(self):
 #         key = pygame.key.get_pressed()
 #         dist = 0.5
-# 
+#
 #         if key[pygame.K_DOWN]:
 #             self.y += dist
 #             self.y = min(self.y, self.height - self.size[1])
@@ -83,15 +84,16 @@ class WholeScreen:
 #         if key[pygame.K_LEFT]:
 #             self.x -= dist
 #             self.x = max(self.x, 0)
-# 
+#
 #     def draw(self, surface):
 #         surface.blit(self.image, self.position, (self.x, self.y) + self.size)
 
 #Class for tilemap
 class Tilemap():
 
-    def __init__(self, Labyrinth):
-        self.Labyrinth = Labyrinth
+    def __init__(self, game_state):
+        self.game_state = game_state
+        self.tiles =game_state.labyrinth
 
         self.x = 0
         self.y = 0
@@ -102,39 +104,25 @@ class Tilemap():
 
         self.width_displayed_in_sprites = int(self.width_displayed / Settings.sprite_width)
         self.height_displayed_in_sprites = int(self.height_displayed / Settings.sprite_height)
-                
-        self.width_in_sprites = Labyrinth.width
-        self.height_in_sprites = Labyrinth.height
-        
+
+        self.width_in_sprites = self.tiles.width
+        self.height_in_sprites = self.tiles.height
+
         self.width = self.width_in_sprites * Settings.sprite_width              #in pixel
         self.height = self.height_in_sprites * Settings.sprite_height           #in pixel
 
-        self.tiles = list()
 
-        for i in range(self.height_in_sprites):
-            self.tiles.append(list())
-            for j in range(self.width_in_sprites):
-                try:
-                    dpoint = self.Labyrinth.data[(j, i)]
-                    self.tiles[i].append(0)
-                except KeyError:
-                    self.tiles[i].append(1)
-                    
     def generate_whole_tilemap(self):
         dummy_surface = pygame.Surface((self.width, self.height))
         for i in range(self.height_in_sprites):
             for j in range(self.width_in_sprites):
                 #Check whether floor or wall
-                if self.tiles[i][j] == 0:
-                    image = Graphics.floor
-                else:
-                    image = Graphics.wall
-                
+                image = Graphics.sprite_mapper[self.tiles.value_at(i,j)]
                 #draw on dummy_surface
                 dummy_surface.blit(image, (j * Settings.sprite_width, i * Settings.sprite_height))
         #return dummy_surface as the whole tilemap
         return dummy_surface
-    
+
     def move(self):
         key = pygame.key.get_pressed()
         dist = 5 * Settings.map_scaling_factor**(0.5)
@@ -153,69 +141,49 @@ class Tilemap():
         if key[pygame.K_LEFT]:
             self.x -= dist
             self.x = max(self.x, 0)
-            
+
+    def blit_clipped(self, surface, image, i,j) :
+        #Ermittle Koordinaten, an die die Grafik geblittet werden soll
+        #Erster Summand ist Position des ersten Tiles. Das muss immer ganz links bzw. ganz oben geblittet werden
+        #Zweiter Summand ist Position des zweiten Tiles relativ zum ersten. Es fängt da an, wo das ggf. anteilge erste Tile aufhört.
+        #Die x-Koordinate muss kleiner werden, wenn wir uns nach rechts bewegen.
+        #Die y-Koordinate muss kleiner werden, wenn wir uns nach unten bewegen.
+        #Daher wir den Rest der Division immer vom Divisor ab.
+        #Dritter Summand ist Position der nachfolgenden Tiles relativ zum vorangegangenen. Verschiebung entsprechend zweiten Tiles.
+        #Durch min bzw. max regeln wir anhand des Laufindexes inwieweit die Summanden relevant sind.
+        #Der zweite wird ab Laufindex = 1 relevant und bleibt ab da auch unveränderlich.
+        #Der dritte wird ab Laufindex = 2 relevant und wächst dann aber auch weiter.
+        image_x = j*Settings.sprite_width - (int(self.x) % Settings.sprite_width)
+        image_y = i*Settings.sprite_height - (int(self.y) % Settings.sprite_height)
+
+
+        #Jetzt blitte bitte
+        #surface.blit(image, (image_x, image_y), (image_inner_x, image_inner_y, image_inner_width, image_inner_height))
+        surface.blit(image, (image_x, image_y))
+
+
     def draw_unscaled(self, surface):
         #Laufe durch Breite und Höhe der Tilemap in Sprites +1. +1 weil die Tiles in der erste und letzten Reihe oder Spalte anteilig sein können.
         #Wenn sie nicht anteilig sind, wird das letzte Tile nicht angezeigt, seine Höhe bzw. Breite ist Null.
         #Da es trotzdem gesucht wird, suchen wir die Tiles mit Try-Except mit break bei IndexError
         for i in range(self.height_displayed_in_sprites + 1):
-            for j in range(self.width_displayed_in_sprites + 1):                   
+            for j in range(self.width_displayed_in_sprites + 1):
                 #Wähle die Grafik
-                try:
-                    if self.tiles[int(self.y / Settings.sprite_height) + i][int(self.x / Settings.sprite_width) + j] == 0:
-                        image = Graphics.floor
-                    else:
-                        image = Graphics.wall
-                except IndexError:
-                    break
-                    
+                image = Graphics.sprite_mapper[self.tiles.value_at(int(self.y / Settings.sprite_height) + i, int(self.x / Settings.sprite_width) + j)]
+
                 if int(self.y / Settings.sprite_height) + i == 0 and int(self.x / Settings.sprite_width) + j == 0:
                     image = Graphics.start
-                    
+
                 if int(self.y / Settings.sprite_height) + i == self.height_in_sprites - 1 and int(self.x / Settings.sprite_width) + j == self.width_in_sprites -1:
-                    image = Graphics.end    
-                                
-                #Ermittle Koordinaten, an die die Grafik geblittet werden soll
-                #Erster Summand ist Position des ersten Tiles. Das muss immer ganz links bzw. ganz oben geblittet werden
-                #Zweiter Summand ist Position des zweiten Tiles relativ zum ersten. Es fängt da an, wo das ggf. anteilge erste Tile aufhört.
-                    #Die x-Koordinate muss kleiner werden, wenn wir uns nach rechts bewegen.
-                    #Die y-Koordinate muss kleiner werden, wenn wir uns nach unten bewegen.
-                    #Daher wir den Rest der Division immer vom Divisor ab.
-                #Dritter Summand ist Position der nachfolgenden Tiles relativ zum vorangegangenen. Verschiebung entsprechend zweiten Tiles.
-                #Durch min bzw. max regeln wir anhand des Laufindexes inwieweit die Summanden relevant sind.
-                    #Der zweite wird ab Laufindex = 1 relevant und bleibt ab da auch unveränderlich.
-                    #Der dritte wird ab Laufindex = 2 relevant und wächst dann aber auch weiter.
-                image_x = self.position[0] + min(j, 1) * (Settings.sprite_width - int(self.x) % Settings.sprite_width) + max(j - 1, 0) * Settings.sprite_width
-                image_y = self.position[1] + min(i, 1) * (Settings.sprite_height - int(self.y) % Settings.sprite_height) + max(i - 1, 0) * Settings.sprite_height
+                    image = Graphics.end
+                self.blit_clipped(surface,image, i,j)
 
-                #Ermittle Teil der Grafik, die geblittet werden soll
-                #Zuerst Startposition innerhalb der Grafik                
 
-                image_inner_x = math.ceil(int(self.x) % Settings.sprite_width) - min(1, j) * math.ceil(int(self.x) % Settings.sprite_width)
-                image_inner_y = math.ceil(int(self.y) % Settings.sprite_height) - min(1, i) * math.ceil(int(self.y) % Settings.sprite_height)
-                
-                if j == self.width_displayed_in_sprites:# - 1:
-                    image_inner_x = 0
-                if i == self.height_displayed_in_sprites:# - 1:
-                    image_inner_y = 0
-
-                #Dann Länge und Breite innerhalb der Grafik
-                image_inner_width = Settings.sprite_width - image_inner_x
-                image_inner_height = Settings.sprite_height - image_inner_y
-
-                if j == self.width_displayed_in_sprites:# -1:
-                    image_inner_width = math.ceil(int(self.x) % Settings.sprite_width)
-                if i == self.height_displayed_in_sprites:# -1:
-                    image_inner_height = math.ceil(int(self.y) % Settings.sprite_height)
-
-                #Jetzt blitte bitte
-                surface.blit(image, (image_x, image_y), (image_inner_x, image_inner_y, image_inner_width, image_inner_height))
-    
     def draw(self, surface):
-                
-        surface.fill((255, 255, 255))
-        surface.blit(Graphics.Tilemap_scaled, (Settings.sprite_width, Settings.sprite_height), (self.x, self.y) + self.size_displayed)
-    
+        subsurf = surface.subsurface( Settings.map_position, (self.width_displayed, self.height_displayed))
+        subsurf.fill((255, 255, 255))
+        subsurf.blit(Graphics.Tilemap_scaled, (Settings.sprite_width, Settings.sprite_height), (self.x, self.y) + self.size_displayed)
+
 #class for health bar
 class Healthbar:
 
