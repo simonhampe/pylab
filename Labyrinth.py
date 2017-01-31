@@ -10,8 +10,8 @@ class Labyrinth :
         self.start = start
         self.data = data
 
-    def value_at(self, row, column) :
-        return self.data.get( (row,column), LabyrinthConstants.LAB_WALL)
+    def value_at(self, column, row) :
+        return self.data.get( (column, row), LabyrinthConstants.LAB_WALL)
 
     def get_start(self) :
         return self.start

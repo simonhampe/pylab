@@ -18,9 +18,9 @@ class CellularGenerator :
         self.width = width
         self.height = height
         self.chance_for_floor = 45
-        self.death_limit = 3 
-        self.birth_limit = 5 
-        self.iterations = 3 
+        self.death_limit = 3
+        self.birth_limit = 5
+        self.iterations = 3
 
     def _iterate(self, room, no_of_iterations = -1) :
         if no_of_iterations < 0 :

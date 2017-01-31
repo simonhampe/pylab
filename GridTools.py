@@ -37,3 +37,21 @@ def manhattan_disc(point, radius) :
             result += [ tuple(map(sum,zip(point,(xdelta, ydelta)))) ]
     return result
 
+def grid_to_pixel( gc, size ) :
+    """
+    Converts grid coordinates to pixel coordinates.
+    More precisely, returns the upper left corner of the given grid element.
+    gc The grid coordinates as tuple (gx,gy)
+    size The size of one grid element as tuple (size_x, size_y)
+    """
+    return (gc[0] * size[0], gc[1] * size[1])
+
+def pixel_to_grid( pc, size ) :
+    """
+    For given pixel coordinates, returns the coordinates of the grid element
+    these coordinates lie in.
+    pc The pixel coordinates as tuple (gx,gy)
+    size The size of one grid element as tuple (size_x, size_y)
+    """
+    return ( int(pc[0] // size[0]), int(pc[1] // size[1]))
+
