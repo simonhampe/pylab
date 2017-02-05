@@ -22,16 +22,21 @@ class PlayerViewRenderer :
         Draws the player view on a given surface.
         Always starts drawing at (0,0)
         """
+        surface.fill((255,255,255))
         player_pixel_pos = self.game_state.player.get_position()
         upper_left_pos = vector_sum( player_pixel_pos, (-self.radius * self.settings.sprite_width, -self.radius * self.settings.sprite_height))
         lower_right_pos = vector_sum( upper_left_pos, self.get_size())
         upper_left_pos = tuple([max(0,x) for x in upper_left_pos])
         lower_right_exceed = vector_sum( lower_right_pos, vector_neg(GridTools.grid_to_pixel(self.game_state.labyrinth.get_size(), self.settings.sprite_size))) 
         upper_left_pos = tuple(map( lambda x : x[0] if x[1] <= 0 else x[0] - x[1], zip( upper_left_pos, lower_right_exceed)))
+        print("UL ", upper_left_pos)
         
         player_grid_pos = GridTools.pixel_to_grid(player_pixel_pos, self.settings.sprite_size)
         player_grid_upper_pixel = GridTools.grid_to_pixel(player_grid_pos, self.settings.sprite_size)
-        drawing_delta = vector_sum( player_grid_upper_pixel, vector_neg(player_pixel_pos))
+        if min(player_pixel_pos) == 0 or max(lower_right_exceed) > 0 :
+            drawing_delta = (0,0)
+        else :
+            drawing_delta = vector_sum( player_grid_upper_pixel, vector_neg(player_pixel_pos))
 
         (start_x, start_y) = GridTools.pixel_to_grid( upper_left_pos, self.settings.sprite_size)
         end_x = min(self.game_state.labyrinth.width, start_x + self.side_length + 1)

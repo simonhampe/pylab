@@ -2,6 +2,7 @@ import sys, pygame, Settings, PlayerViewRenderer
 import GameState
 from CellularGenerator import CellularGenerator
 from pygame import Rect
+from pygame.time import Clock
 from pygame.locals import *
 
 pygame.init()
@@ -25,8 +26,11 @@ class updater:
 
 GS.add_update_listener(updater())
 GS.fire_player_moved()
+cl = Clock()
 
 while True:
+
+    cl.tick(150)
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LCTRL] and keys[pygame.K_d]:
         pygame.quit()
