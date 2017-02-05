@@ -23,21 +23,32 @@ class PlayerViewRenderer :
         Always starts drawing at (0,0)
         """
         player_pixel_pos = self.game_state.player.get_position()
+        upper_left_pos = vector_sum( player_pixel_pos, (-self.radius * self.settings.sprite_width, -self.radius * self.settings.sprite_height))
+        lower_right_pos = vector_sum( upper_left_pos, self.get_size())
+        upper_left_pos = tuple([max(0,x) for x in upper_left_pos])
+        lower_right_exceed = vector_sum( lower_right_pos, vector_neg(GridTools.grid_to_pixel(self.game_state.labyrinth.get_size(), self.settings.sprite_size))) 
+        upper_left_pos = tuple(map( lambda x : x[0] if x[1] <= 0 else x[0] - x[1], zip( upper_left_pos, lower_right_exceed)))
+        
         player_grid_pos = GridTools.pixel_to_grid(player_pixel_pos, self.settings.sprite_size)
         player_grid_upper_pixel = GridTools.grid_to_pixel(player_grid_pos, self.settings.sprite_size)
         drawing_delta = vector_sum( player_grid_upper_pixel, vector_neg(player_pixel_pos))
-        start_x = max(0, player_grid_pos[0] - self.radius)
-        start_y = max(1, player_grid_pos[1] - self.radius)
+
+        (start_x, start_y) = GridTools.pixel_to_grid( upper_left_pos, self.settings.sprite_size)
         end_x = min(self.game_state.labyrinth.width, start_x + self.side_length + 1)
         end_y = min(self.game_state.labyrinth.height, start_y + self.side_length + 1)
+        draw_x = 0
+        draw_y = 0
         for x_coord in range(start_x, end_x) :
+            draw_y = 0
             for y_coord in range(start_y, end_y) :
                 image = TileLibrary.map_value_to_sprite(self.settings.tile_library, self.game_state.labyrinth.value_at( x_coord, y_coord))
-                pixel_coord = vector_sum(GridTools.grid_to_pixel( (x_coord - start_x, y_coord - start_y), self.settings.sprite_size), drawing_delta)
+                pixel_coord = vector_sum( (draw_x, draw_y), drawing_delta)
                 surface.blit(image, pixel_coord)
+                draw_y += self.settings.sprite_height
+            draw_x += self.settings.sprite_width
         #Draw player
         player_image = self.settings.tile_library.player
-        player_draw_coord = vector_sum(GridTools.grid_to_pixel( (player_grid_pos[0] - start_x, player_grid_pos[1] - start_y), self.settings.sprite_size), drawing_delta)
+        player_draw_coord = vector_sum( player_pixel_pos, vector_neg(upper_left_pos))
         surface.blit(player_image, player_draw_coord)
 
 

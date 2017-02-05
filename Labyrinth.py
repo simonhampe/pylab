@@ -16,6 +16,9 @@ class Labyrinth :
     def get_start(self) :
         return self.start
 
+    def get_size(self) :
+        return (self.width, self.height)
+
     def scale(self, factor) :
         self.width = int(self.width * factor)
         self.height = int(self.height * factor)
