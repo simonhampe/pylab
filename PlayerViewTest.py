@@ -42,13 +42,17 @@ while True:
         pygame.quit()
         sys.exit()
     if keys[pygame.K_DOWN]:
-        GS.move_player((0, 1))
+        GS.move_player((0, GS.player_speed))
     if keys[pygame.K_UP]:
-        GS.move_player((0, -1))
+        GS.move_player((0, - GS.player_speed))
     if keys[pygame.K_LEFT]:
-        GS.move_player((-1, 0))
+        GS.move_player((-GS.player_speed, 0))
     if keys[pygame.K_RIGHT]:
-        GS.move_player((1, 0))
+        GS.move_player((GS.player_speed, 0))
+    if keys[pygame.K_0]:
+        GS.change_player_speed_by(0.1)
+    if keys[pygame.K_9]:
+        GS.change_player_speed_by(-.1)
 
     for event in pygame.event.get():
         # exit event

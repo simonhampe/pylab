@@ -1,4 +1,5 @@
-import GridTools, TileLibrary
+import GridTools
+import TileLibrary
 from MatrixTools import *
 
 
@@ -15,7 +16,7 @@ class PlayerViewRenderer:
         self.settings = graphic_settings
 
     def get_size(self):
-        return (self.side_length * self.settings.sprite_width, self.side_length * self.settings.sprite_height)
+        return self.side_length * self.settings.sprite_width, self.side_length * self.settings.sprite_height
 
     def draw(self, surface):
         """
@@ -25,9 +26,9 @@ class PlayerViewRenderer:
         surface.fill((255, 255, 255))
         maxdim = (self.game_state.labyrinth.width * self.settings.sprite_width,
                   self.game_state.labyrinth.height * self.settings.sprite_height)
-        player_pixel_pos = self.game_state.player.get_position()
+        player_pixel_pos = tuple(map(int, self.game_state.player.get_position()))
         upper_left_pos = list(vector_sum(player_pixel_pos, (
-        -self.radius * self.settings.sprite_width, -self.radius * self.settings.sprite_height)))
+            -self.radius * self.settings.sprite_width, -self.radius * self.settings.sprite_height)))
         lower_right_pos = list(vector_sum(upper_left_pos, self.get_size()))
         for i in range(0, 2):
             if upper_left_pos[i] < 0:
@@ -45,7 +46,6 @@ class PlayerViewRenderer:
         end_x = min(self.game_state.labyrinth.width, start_x + self.side_length + 1)
         end_y = min(self.game_state.labyrinth.height, start_y + self.side_length + 1)
         draw_x = 0
-        draw_y = 0
         for x_coord in range(start_x, end_x):
             draw_y = 0
             for y_coord in range(start_y, end_y):

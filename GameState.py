@@ -10,6 +10,7 @@ class GameState:
         self.settings = settings
         (x, y) = self.labyrinth.get_start()
         self.player = Player.Player(x * settings.sprite_width, y * settings.sprite_height)
+        self.player_speed = 1
         self.update_listeners = []
 
     def move_player(self, delta):
@@ -25,6 +26,13 @@ class GameState:
                 return
         (self.player.x, self.player.y) = newpos
         self.notify_player_moved()
+
+    def set_player_speed(self, new_player_speed):
+        self.player_speed = max(0,new_player_speed)
+
+    def change_player_speed_by(self, delta):
+        self.player_speed += delta
+        self.player_speed = max(0,self.player_speed)
 
     def add_update_listener(self, listener):
         self.update_listeners.append(listener)
