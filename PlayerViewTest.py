@@ -1,3 +1,4 @@
+import GridTools
 import PlayerViewRenderer
 import Settings
 import pygame
@@ -42,13 +43,13 @@ while True:
         pygame.quit()
         sys.exit()
     if keys[pygame.K_DOWN]:
-        GS.move_player((0, GS.player_speed))
+        GS.move_player(GridTools.Direction.DOWN)
     if keys[pygame.K_UP]:
-        GS.move_player((0, - GS.player_speed))
+        GS.move_player(GridTools.Direction.UP)
     if keys[pygame.K_LEFT]:
-        GS.move_player((-GS.player_speed, 0))
+        GS.move_player(GridTools.Direction.LEFT)
     if keys[pygame.K_RIGHT]:
-        GS.move_player((GS.player_speed, 0))
+        GS.move_player(GridTools.Direction.RIGHT)
     if keys[pygame.K_0]:
         GS.change_player_speed_by(0.1)
     if keys[pygame.K_9]:
