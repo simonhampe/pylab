@@ -24,7 +24,7 @@ class DungeonLabGenerator :
         self.min_room_dims = (int(width/10),int(height/10))
         self.max_room_dims = (int(width/5),int(width/5))
         avg_room_size = (self.min_room_dims[0] + self.max_room_dims[0])*(self.min_room_dims[1] + self.max_room_dims[1]) * 1/4
-        self.room_tries = int(width * height / (avg_room_size)) * 20 
+        self.room_tries = int(width * height / (avg_room_size))
         self.boundary_buffer = 1
         self.room_boundary_buffer = 1
 
@@ -44,15 +44,45 @@ class DungeonLabGenerator :
                     break
             if not current_point :
                 return
+            Direction = None
             while current_point :
-                candidates = [x for x in current_point.straight_neighbours() if x.data.valid]
+                candidates = [x for x in ["n","e","s","w"] if current_point.nb(x).data.valid]
                 for nb in current_point.straight_neighbours() :
                     nb.data.valid = False
-                
+
                 current_point.data = DungeonData(LAB_FLOOR, False)
                 #Pick a random neighbour (or stop if there is no valid neighbour)
-                current_point = None if len(candidates) == 0 else random.choice(candidates)
-            
+                if len(candidates) == 0 :
+                    current_point = None
+                else :
+                    if Direction and Direction in candidates and random.randint(0,100) <= 75:
+                        current_point = current_point.nb(Direction)
+                    else :
+                        Direction = random.choice(candidates)
+                        current_point = current_point.nb(Direction)
+
+    def _cleanup_corridors(self,GM) :
+        def selector(node) :
+            return node.data.data == LAB_FLOOR
+        comps = GM.connected_components(selector, True)
+        bigcomps = []
+        # Remove small corridors
+        for c in comps :
+            if len(c) < 10 :
+                for nd in c :
+                    nd.data.data = LAB_WALL
+            else
+                bigcomps.append(c)
+        # Find dead ends for each component
+        dead_ends = []
+        for c in bigcomps :
+            bc_ends = []
+            for nd in c :
+                if len([x for x in c.straight_neighbours() if x.data.data = LAB_FLOOR]) <= 1 :
+                    bc_ends.append(nd)
+            dead_ends.append(bc_ends)
+
+
 
     def generate_labyrinth(self) :
         roomlist = []
@@ -67,7 +97,7 @@ class DungeonLabGenerator :
         def GridFiller(r,c) :
             validity = True
             if not Rect(self.boundary_buffer, self.boundary_buffer, self.width - 2*self.boundary_buffer, self.height - 2*self.boundary_buffer).collidepoint(c,r) :
-                return DungeonData(LAB_WALL, False) 
+                return DungeonData(LAB_WALL, False)
             for rm in roomlist :
                 if rm.collidepoint(c,r) :
                     return DungeonData( LAB_FLOOR, False)
@@ -77,14 +107,15 @@ class DungeonLabGenerator :
             return DungeonData( LAB_WALL, validity)
         GM = GridMatrix(self.width, self.height, GridFiller)
         self._build_corridors(GM)
+        self._cleanup_corridors(GM)
         rdict = {}
         for node in GM.rowwise_iterator() :
             if node.data.data == LAB_FLOOR :
-                rdict[ node.column, node.row] = LAB_FLOOR 
+                rdict[ node.column, node.row] = LAB_FLOOR
         start_point, end_point = (0,0), (0,0)
         #start_point = random.choice(list(rdict))
         #end_point = random.choice(list(rdict))
-        
 
-        return Labyrinth(self.width, self.height, start_point, end_point, rdict)
+
+        return Labyrinth(self.width, self.height, start_point, rdict)
 

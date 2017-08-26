@@ -33,6 +33,9 @@ class GridNode :
     def straight_neighbours(self):
         return [x for x in [self.n, self.e, self.s, self.w] if x]
 
+    def nb(self,direction) :
+        return {"n" : self.n, "ne" : self.ne, "e" : self.e, "se" : self.se, "s" : self.s, "sw" : self.sw, "w" : self.w, "nw" : self.nw}[direction]
+
 
 class GridMatrix :
 
@@ -97,5 +100,44 @@ class GridMatrix :
             while node :
                 yield node
                 node = node.s
+
+    def connected_components(self, selector, only_straight_nbs = False) :
+        """
+        Computes connected components of the grid according to a certain selector.
+        The selector returns True or False, when selector(node) is called.
+        Connected component of "True" nodes are returned.
+        If only_straight_nbs is True, then nodes are only connected to their straight neighbours.
+        The result is returned as a list of lists.
+        """
+        result = []
+        visited = []
+        node_it = self.rowwise_iterator()
+        node = next(node_it)
+        while len(visited) < self.width * self.height :
+            while node in visited :
+                node = next(node_it)
+            visited.append(node)
+            if selector(node) :
+                queue = [node]
+                component = [node]
+                while len(queue) > 0:
+                    front, queue = queue[0], queue[1:]
+                    candidates = front.straight_neighbours() if only_straight_nbs else front.neighbours()
+                    candidates = [c for c in candidates if c not in visited]
+                    for c in candidates :
+                        visited.append(c)
+                        if selector(c) :
+                            component.append(c)
+                            queue.append(c)
+                result.append(component)
+        return result
+
+
+
+
+
+
+
+
 
 

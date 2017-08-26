@@ -54,4 +54,3 @@ def pixel_to_grid( pc, size ) :
     size The size of one grid element as tuple (size_x, size_y)
     """
     return ( int(pc[0] // size[0]), int(pc[1] // size[1]))
-
