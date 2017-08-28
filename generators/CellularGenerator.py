@@ -1,8 +1,9 @@
 import random
-from Labyrinth import Labyrinth
-import GridTools
+
 from GridMatrix import GridMatrix
+from Labyrinth import Labyrinth
 from LabyrinthConstants import *
+from tools import GridTools
 
 """
  This creates a labyrinth from a single cellular automaton
@@ -68,7 +69,7 @@ class CellularGenerator :
         for node in comp:
             rdict[ (node.column, node.row) ] = LAB_FLOOR
         start_point = random.choice(list(rdict))
-        all_end_points = sorted( rdict, key= lambda p : GridTools.manhattan_distance(start_point,p))
+        all_end_points = sorted(rdict, key= lambda p : GridTools.manhattan_distance(start_point, p))
         end_point = all_end_points[15] #random.choice( all_end_points[ -len(all_end_points)/3 :])
         rdict[ end_point ] = LAB_END
         return Labyrinth(self.width, self.height, start_point, rdict)

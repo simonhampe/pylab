@@ -1,7 +1,7 @@
-import GridTools
 import LabyrinthConstants
 import Player
-from MatrixTools import *
+from tools import GridTools
+from tools.MatrixTools import *
 
 
 class GameState:

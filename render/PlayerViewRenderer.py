@@ -1,6 +1,6 @@
-import GridTools
-import TileLibrary
-from MatrixTools import *
+from render import TileLibrary
+from tools import GridTools
+from tools.MatrixTools import *
 
 
 class PlayerViewRenderer:

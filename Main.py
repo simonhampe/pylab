@@ -1,21 +1,21 @@
-import GridTools
-import PlayerViewRenderer
-import Settings
-import pygame
 import sys
 
-from pygame.locals import *
+import pygame
+from pygame.constants import QUIT
+from pygame.locals import Rect
 from pygame.time import Clock
 
 import GameState
-from CellularGenerator import CellularGenerator
+from generators.CellularGenerator import CellularGenerator
+from render import PlayerViewRenderer, GraphicSettings
+from tools import GridTools
 
 pygame.init()
 screen = pygame.display.set_mode((800, 800), pygame.RESIZABLE)
 screen.fill((255, 255, 255))
 pygame.display.set_caption('PlayerViewRenderer - Test')
 
-my_settings = Settings.GraphicSettings()
+my_settings = GraphicSettings.GraphicSettings()
 GS = GameState.GameState(CellularGenerator(63, 63), my_settings)
 
 view_radius = 3
