@@ -46,7 +46,6 @@ class GameState:
     def check_player_speed(self):
         self.player_speed = max(0, self.player_speed)
         self.player_speed = min(self.max_player_speed, self.player_speed)
-        print(self.player_speed, self.player.position)
 
     def add_update_listener(self, listener):
         self.update_listeners.append(listener)

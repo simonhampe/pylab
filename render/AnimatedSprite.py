@@ -1,0 +1,2 @@
+class AnimatedSprite:
+    #d = {"left": []}

@@ -1,3 +1,5 @@
+import pygame
+
 from render import TileLibrary
 
 
@@ -19,3 +21,4 @@ class GraphicSettings:
         self.screen_size = screen_size
         self.screen_width, self.screen_height = screen_size
         self.tile_library = TileLibrary.TileLibraryFromPath(library_path, sprite_size)
+        self.color_key = pygame.Color(4, 130, 132)

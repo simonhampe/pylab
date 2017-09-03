@@ -1,6 +1,5 @@
-import sys
-
 import pygame
+import sys
 from pygame.constants import QUIT
 from pygame.locals import Rect
 from pygame.time import Clock
@@ -18,12 +17,11 @@ pygame.display.set_caption('PlayerViewRenderer - Test')
 my_settings = GraphicSettings.GraphicSettings()
 GS = GameState.GameState(CellularGenerator(63, 63), my_settings)
 
-view_radius = 3
+view_radius = 11
 prenderer = PlayerViewRenderer.PlayerViewRenderer(GS, view_radius, my_settings)
 render_surface = screen.subsurface(Rect((my_settings.sprite_width, my_settings.sprite_height), prenderer.get_size()))
 
 prenderer.draw(render_surface)
-
 
 class Updater:
     def player_moved(self, game_state):
@@ -37,18 +35,21 @@ cl = Clock()
 
 while True:
 
-    cl.tick(150)
+    time_passed = cl.tick(150)
+
+    print(1000/time_passed)
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LCTRL] and keys[pygame.K_d]:
         pygame.quit()
         sys.exit()
-    if keys[pygame.K_DOWN]:
+    if keys[pygame.K_s]:
         GS.move_player(GridTools.Direction.DOWN)
-    if keys[pygame.K_UP]:
+    if keys[pygame.K_w]:
         GS.move_player(GridTools.Direction.UP)
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_a]:
         GS.move_player(GridTools.Direction.LEFT)
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_d]:
         GS.move_player(GridTools.Direction.RIGHT)
     if keys[pygame.K_0]:
         GS.change_player_speed_by(0.1)
