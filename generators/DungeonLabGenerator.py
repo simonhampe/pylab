@@ -1,8 +1,10 @@
-from LabyrinthConstants import LAB_WALL, LAB_FLOOR
 import random
+
 from pygame.locals import Rect
-from GridMatrix import GridMatrix
-from Labyrinth import Labyrinth
+
+from gameData.GridMatrix import GridMatrix
+from gameData.Labyrinth import Labyrinth
+from gameData.LabyrinthConstants import LAB_WALL, LAB_FLOOR
 
 
 class DungeonData:

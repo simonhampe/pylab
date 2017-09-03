@@ -5,7 +5,7 @@ from pygame.constants import QUIT
 from pygame.locals import Rect
 from pygame.time import Clock
 
-import GameState
+from gameData import GameState
 from generators.CellularGenerator import CellularGenerator
 from render import PlayerViewRenderer, GraphicSettings
 from tools import GridTools

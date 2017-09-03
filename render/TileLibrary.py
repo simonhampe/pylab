@@ -1,5 +1,6 @@
-from LabyrinthConstants import *
 import pygame
+
+from gameData.LabyrinthConstants import *
 
 
 class TileLibraryFromPath:

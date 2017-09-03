@@ -1,8 +1,8 @@
 import random
 
-from GridMatrix import GridMatrix
-from Labyrinth import Labyrinth
-from LabyrinthConstants import *
+from gameData.GridMatrix import GridMatrix
+from gameData.Labyrinth import Labyrinth
+from gameData.LabyrinthConstants import *
 from tools import GridTools
 
 """

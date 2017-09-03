@@ -1,4 +1,4 @@
-import LabyrinthConstants
+from gameData import LabyrinthConstants
 
 
 # Convention: Any key not contained is a wall

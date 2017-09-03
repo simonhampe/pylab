@@ -1,5 +1,4 @@
-import LabyrinthConstants
-import Player
+from gameData import Player, LabyrinthConstants
 from tools import GridTools
 from tools.MatrixTools import *
 
