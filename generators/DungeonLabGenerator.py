@@ -83,7 +83,7 @@ class DungeonLabGenerator:
         for c in bigcomps:
             bc_ends = []
             for nd in c:
-                if len([x for x in c.straight_neighbours() if x.data.data = LAB_FLOOR]) <= 1:
+                if len([x for x in c.straight_neighbours() if x.data.data == LAB_FLOOR]) <= 1:
                     bc_ends.append(nd)
             dead_ends.append(bc_ends)
 
