@@ -60,11 +60,10 @@ class CellularAutomaton:
             return []
         queue = [node]
         component = []
-        visited = set()
         while len(queue) > 0:
             nd, queue = queue[0], queue[1:]
-            if nd not in visited:
-                visited.add(nd)
+            if not nd.data.is_visited():
+                nd.data.mark_as_visited()
                 component += [nd]
                 queue += [x for x in nd.straight_neighbours() if x.data.get_last_state()]
         return component
@@ -75,14 +74,12 @@ class CellularAutomaton:
         going up, down, left and right in the grid) of alive cells in the grid with respect to the last iteration.
         The component is returned as a list of nodes.
         """
-        visited = []
         max_component = []
         for node in self.grid.rowwise_iterator():
-            if node in visited:
+            if node.data.is_visited():
                 next
             print("Computing component of ", node.row, node.column)
             node_component = self.get_connected_component(node)
-            visited = visited + node_component
             if len(node_component) > len(max_component):
                 max_component = node_component
         return max_component

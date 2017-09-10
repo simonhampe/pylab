@@ -1,6 +1,7 @@
 class CellularState:
     """
-    Describes the state and state history of a cell in a cellular automaton
+    Describes the state and state history of a cell in a cellular automaton.
+    In addition, every state has a "visited" boolean marker, which can be set.
     """
 
     def __init__(self, state):
@@ -9,10 +10,12 @@ class CellularState:
         :param state: Boolean, true if ALIVE
         """
         self.states = [state]
+        self.visited = False
 
     def set_next_state(self, state):
         """
-        Sets the state of this cell for the next iteration
+        Sets the state of this cell for the next iteration.
+        This resets the visited marker to false.
         :param state: Boolean, true if alive
         """
         self.states.append(state)
@@ -32,3 +35,15 @@ class CellularState:
         :return: The state from the last iteration (or the initial state, if no iteration was performed).
         """
         return self.states[-1]
+
+    def is_visited(self):
+        """
+        :return: Whether the visited marker is set to True
+        """
+        return self.visited
+
+    def mark_as_visited(self):
+        """
+        Sets the visited marker to true
+        """
+        self.visited = True
