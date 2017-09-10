@@ -14,8 +14,8 @@ class MinimapRenderer:
         self.field_size = field_size
         self.color_map = {LabyrinthConstants.LAB_FLOOR: Color(255, 178, 102),
                           LabyrinthConstants.LAB_WALL: Color(50, 50, 50),
-                          LabyrinthConstants.LAB_END: Color(0,255,0),
-                          LabyrinthConstants.LAB_NIRVANA: Color(255,0,255)}
+                          LabyrinthConstants.LAB_END: Color(0, 255, 0),
+                          LabyrinthConstants.LAB_NIRVANA: Color(255, 0, 255)}
 
     def draw(self, surface):
         (width, height) = self.labyrinth.get_size()
@@ -34,15 +34,14 @@ screen = pygame.display.set_mode((800, 800), pygame.RESIZABLE)
 screen.fill((255, 255, 255))
 pygame.display.set_caption('PlayerViewRenderer - Test')
 
-generator = CellularGenerator(200, 200)
+generator = CellularGenerator(100, 100, 3)
 labyrinth = generator.generate_labyrinth()
 
 renderer = MinimapRenderer(labyrinth, 3)
-render_surface = screen.subsurface(Rect(20,20, 600,600))
+render_surface = screen.subsurface(Rect(20, 20, 600, 600))
 
 renderer.draw(render_surface)
 pygame.display.update()
-
 
 while True:
 

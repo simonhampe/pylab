@@ -15,7 +15,7 @@ screen.fill((255, 255, 255))
 pygame.display.set_caption('PlayerViewRenderer - Test')
 
 my_settings = GraphicSettings.GraphicSettings()
-GS = GameState.GameState(CellularGenerator(63, 63), my_settings)
+GS = GameState.GameState(CellularGenerator(100, 100, 3), my_settings)
 
 view_radius = 11
 prenderer = PlayerViewRenderer.PlayerViewRenderer(GS, view_radius, my_settings)

@@ -19,6 +19,7 @@ class TileLibraryFromPath:
         self.end = self._load_and_process("end.png")
         self.wall = self._load_and_process("wall.jpg")
         self.floor = self._load_and_process("floor.jpg")
+        self.nirvana = self._load_and_process("nirvana.png")
 
     def _load_and_process(self, filename):
         image = pygame.image.load(self.path + filename)
@@ -31,4 +32,4 @@ class TileLibraryFromPath:
 
 
 def map_value_to_sprite(library, value):
-    return {LAB_FLOOR: library.floor, LAB_WALL: library.wall, LAB_NIRVANA: library.wall, LAB_END: library.end}[value]
+    return {LAB_FLOOR: library.floor, LAB_WALL: library.wall, LAB_NIRVANA: library.nirvana, LAB_END: library.end}[value]

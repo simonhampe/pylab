@@ -48,7 +48,8 @@ class CellularAutomaton:
                     node.data.set_next_state(nb_alive >= self.birth_limit)
             self.iterations = self.iterations + 1
 
-    def get_connected_component(self, node):
+    @staticmethod
+    def get_connected_component(node):
         """
         This finds the connected component of alive cells of the given node (where connected means connected by a path
         going up, down, left and right in the grid) with respect to the last iteration.
@@ -78,8 +79,13 @@ class CellularAutomaton:
         for node in self.grid.rowwise_iterator():
             if node.data.is_visited():
                 next
-            print("Computing component of ", node.row, node.column)
             node_component = self.get_connected_component(node)
             if len(node_component) > len(max_component):
                 max_component = node_component
         return max_component
+
+    def get_alive_nodes(self):
+        """
+        :return: A list of all nodes which are currently alive.
+        """
+        return [node for node in self.grid.rowwise_iterator() if node.data.get_last_state()]
