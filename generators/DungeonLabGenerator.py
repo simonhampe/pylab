@@ -2,9 +2,9 @@ import random
 
 from pygame.locals import Rect
 
-from gameData.GridMatrix import GridMatrix
 from gameData.Labyrinth import Labyrinth
 from gameData.LabyrinthConstants import LAB_WALL, LAB_FLOOR
+from tools.cellular.GridMatrix import GridMatrix
 
 
 class DungeonData:
