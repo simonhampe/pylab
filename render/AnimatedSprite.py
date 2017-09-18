@@ -16,7 +16,18 @@ class AnimatedSprite:
         """
         self.tile_matrix = tile_matrix
         self.configuration = animation_configuration
-        self.current_state = self.configuration.initial_state
+        self.current_state = None
+        self.current_tile_sequence = []
+        self.current_tile_index = 0
+        self.set_state(self.configuration.initial_state)
+
+    def set_state(self, new_state):
+        """
+        Sets the state of the sprite and adjusts the animation accordingly.
+        :param new_state: The new state. Should be a key in the animation configuration used
+        in the constructor.
+        """
+        self.current_state = new_state
         self.current_tile_sequence = self.configuration.state_to_tile_mapping[self.state]
         self.current_tile_index = 0
 

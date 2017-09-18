@@ -1,4 +1,6 @@
 from render import TileLibrary
+from render.AnimationConfiguration import AnimationConfiguration
+from render.TileMatrix import TileMatrix
 from tools import GridTools
 from tools.MatrixTools import *
 
@@ -14,6 +16,8 @@ class PlayerViewRenderer:
         self.radius = max(radius, 1)
         self.side_length = 2 * self.radius + 1
         self.settings = graphic_settings
+        self.player_tiles = TileMatrix('images/player_sprites.png', (24, 32))
+        self.player_config = AnimationConfiguration(player_tile_mapping, player_initial_state, player_animation_step)
 
     def get_size(self):
         return self.side_length * self.settings.sprite_width, self.side_length * self.settings.sprite_height
