@@ -32,14 +32,17 @@ class CellularAutomaton:
                                lambda r, c:
                                CellularState(True) if random.randint(1, 100) < alive_ratio
                                else CellularState(False))
+        self.connected_components = None
 
     def iterate(self, number_of_iterations=1):
         """
         This runs the given number of iterations on the cellular automaton.
         :param number_of_iterations: How many iterations should be run. Defaults to 1 if not given.
         """
+        self.connected_components = None
         for i in range(0, number_of_iterations):
             for node in self.grid.rowwise_iterator():
+                node.data.mark_as_unvisited()
                 old_node_data = node.data.get_state(self.iterations)
                 nb_alive = len([0 for nb in node.neighbours() if nb.data.get_state(self.iterations)])
                 if old_node_data:
@@ -49,10 +52,12 @@ class CellularAutomaton:
             self.iterations = self.iterations + 1
 
     @staticmethod
-    def get_connected_component(node):
+    def _get_connected_component(node):
         """
         This finds the connected component of alive cells of the given node (where connected means connected by a path
         going up, down, left and right in the grid) with respect to the last iteration.
+        Note that this will mark all nodes in the same component as visited.
+        This method should not be called from outside this class.
         :param node: A node in the grid.
         :return: The connected component of the node. The component is empty, if the node itself is not alive.
         """
@@ -69,6 +74,23 @@ class CellularAutomaton:
                 queue += [x for x in nd.straight_neighbours() if x.data.get_last_state()]
         return component
 
+    def get_connected_components(self):
+        """
+        :return: The list of connected components of alive cells (where connected means connected by a path
+        going up, down, left and right in the grid) with respect to the last iteration.
+        This is a lazy computation, i.e. it takes place only when first requested. In particular, this
+        will take significantly longer when called for the first time after an iteration.
+        Every component is returned as a list of nodes.
+        """
+        if self.connected_components is not None:
+            return self.connected_components
+        self.connected_components = []
+        for node in self.grid.rowwise_iterator():
+            if node.data.is_visited():
+                next
+            self.connected_components.append(self._get_connected_component(node))
+        return self.connected_components
+
     def get_largest_component(self):
         """
         :return: A largest connected component (where connected means connected by a path
@@ -76,10 +98,7 @@ class CellularAutomaton:
         The component is returned as a list of nodes.
         """
         max_component = []
-        for node in self.grid.rowwise_iterator():
-            if node.data.is_visited():
-                next
-            node_component = self.get_connected_component(node)
+        for node_component in self.get_connected_components():
             if len(node_component) > len(max_component):
                 max_component = node_component
         return max_component

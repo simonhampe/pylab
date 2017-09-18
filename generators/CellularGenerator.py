@@ -33,7 +33,7 @@ class CellularGenerator:
         component = floor_automaton.get_largest_component()
 
         print("Creating cellular automaton for nirvana")
-        nirvana_automaton = CellularAutomaton((self.width - 2 * self.margin, self.height - 2 * self.margin), 3, 1, 2)
+        nirvana_automaton = CellularAutomaton((self.width - 2 * self.margin, self.height - 2 * self.margin), 5, 1, 2)
         print("Iterating")
         nirvana_automaton.iterate(3)
         nirvana_nodes = nirvana_automaton.get_alive_nodes()

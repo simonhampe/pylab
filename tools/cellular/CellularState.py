@@ -47,3 +47,9 @@ class CellularState:
         Sets the visited marker to true
         """
         self.visited = True
+
+    def mark_as_unvisited(self):
+        """
+        Sets the visited marker to false
+        """
+        self.visited = False

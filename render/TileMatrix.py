@@ -27,7 +27,13 @@ class TileMatrix:
         """
         return self.image.subsurface(Rect(row * self.size[0], self.size[0], column * self.size[1], self.size[1]))
 
-    def _load_and_process(self, filename):
+    @staticmethod
+    def _load_and_process(filename):
+        """
+        Loads an image file with the given filename
+        :param filename: The filename of the image.
+        :return: A pygame Image. Alpha values are preserved, if present.
+        """
         to_load = pygame.image.load(filename)
         if to_load.get_alpha() is None:
             to_load = to_load.convert()
